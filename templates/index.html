@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}GC Professionals Club — Registration Form{% endblock %}
+
+{% block content %}
+<div class="step-indicator" aria-hidden="true">
+    <div class="step-pill active" id="pill-1"></div>
+    <div class="step-pill" id="pill-2"></div>
+</div>
+
+<form id="registrationForm" novalidate>
+
+    <section class="form-step active" id="step-1">
+        <h2>Page 1 of 2: Personal Details</h2>
+
+        <div class="form-group">
+            <label for="fullName">Full Name (Surname, First Name, Other Name) <span class="required">*</span></label>
+            <input type="text" id="fullName" name="fullName" required placeholder="e.g., Anderson, Paul Kwaku">
+        </div>
+
+        <div class="form-group">
+            <label for="dobMonthYear">Date of Birth (Month & Year) <span class="required">*</span></label>
+            <input type="month" id="dobMonthYear" name="dobMonthYear" required>
+        </div>
+
+        <div class="form-group">
+            <label for="gender">Gender <span class="required">*</span></label>
+            <select id="gender" name="gender" required>
+                <option value="" disabled selected>Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="nationality">Nationality <span class="required">*</span></label>
+            <input type="text" id="nationality" name="nationality" required value="Ghanaian" placeholder="e.g., Ghanaian, German">
+        </div>
+
+        <div class="form-group">
+            <label for="hometown">Place of Origin / Hometown (Ghana) <span class="required">*</span></label>
+            <input type="text" id="hometown" name="hometown" required placeholder="e.g., Kumasi, Ashanti Region">
+        </div>
+
+        <div class="form-group">
+            <label for="cityGermany">Current City / Town of Residence (Germany) <span class="required">*</span></label>
+            <input type="text" id="cityGermany" name="cityGermany" required placeholder="e.g., Düsseldorf, Siegen, Herne">
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Phone Number (including country code) <span class="required">*</span></label>
+            <input type="tel" id="phone" name="phone" required placeholder="+49 170 1234567">
+        </div>
+
+        <div class="form-group">
+            <label for="membershipCategory">Membership Category <span class="required">*</span></label>
+            <select id="membershipCategory" name="membershipCategory" required>
+                <option value="" disabled selected>Select Category</option>
+                <option value="Club Member">Club Member</option>
+                <option value="Club Mentor">Club Mentor</option>
+                <option value="Club Mentee">Club Mentee</option>
+            </select>
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-primary" onclick="nextStep()">Next Page &rarr;</button>
+        </div>
+    </section>
+
+    <section class="form-step" id="step-2">
+        <h2>Page 2 of 2: Professional Details & Engagement</h2>
+
+        <div class="form-group">
+            <label for="occupation">Occupation / Profession</label>
+            <input type="text" id="occupation" name="occupation" placeholder="e.g., Social Scientist, Data Engineer">
+        </div>
+
+        <div class="form-group">
+            <label>Skills & Areas of Expertise (Select all that apply)</label>
+            <div class="checkbox-group">
+                <label class="option-label"><input type="checkbox" name="skills" value="Business & Entrepreneurship"> Business & Entrepreneurship</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Information Technology / ICT"> Information Technology / ICT</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Health & Medicine"> Health & Medicine</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Education & Training"> Education & Training</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Law & Legal Affairs"> Law & Legal Affairs</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Arts, Culture & Media"> Arts, Culture & Media</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Finance & Accounting"> Finance & Accounting</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Community Development & Social Work"> Community Development & Social Work</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Engineering & Technology"> Engineering & Technology</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Other"> Other</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="referral">How did you hear about GC Professionals Club?</label>
+            <select id="referral" name="referral">
+                <option value="" disabled selected>Select an option</option>
+                <option value="Friend / Family Member">Friend / Family Member</option>
+                <option value="Social Media">Social Media (Facebook, Instagram, LinkedIn)</option>
+                <option value="Council Event or Programme">Council Event or Programme</option>
+                <option value="Website">Website</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="volunteer">Are you willing to volunteer or actively contribute? <span class="required">*</span></label>
+            <select id="volunteer" name="volunteer" required>
+                <option value="" disabled selected>Select Commitment</option>
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+                <option value="Maybe">Maybe</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="comments">Additional Comments or How You Would Like to Contribute</label>
+            <textarea id="comments" name="comments" placeholder="Share any specific projects, ideas, or feedback..."></textarea>
+        </div>
+
+        <div class="gdpr-box form-group">
+            <label style="margin-bottom: 0.75rem;">Data Protection & Consent Declaration (GDPR) <span class="required">*</span></label>
+            <div class="checkbox-group">
+                <label class="option-label">
+                    <input type="checkbox" id="gdpr1" name="gdpr1" required>
+                    <span>I consent to storage and processing of my personal data for membership purposes in accordance with GDPR regulations.</span>
+                </label>
+                <label class="option-label">
+                    <input type="checkbox" id="gdpr2" name="gdpr2" required>
+                    <span>I agree to receive communications regarding events, activities, and membership updates.</span>
+                </label>
+                <label class="option-label">
+                    <input type="checkbox" id="gdpr3" name="gdpr3" required>
+                    <span>I confirm that the information provided is accurate and complete to the best of my knowledge.</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
+            <button type="submit" class="btn btn-primary" id="submitBtn">Submit Application</button>
+        </div>
+    </section>
+
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const registrationForm = document.getElementById('registrationForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Page 1 -> Page 2 Transition & Input Check
+    function nextStep() {
+        const currentStep = document.getElementById('step-1');
+        const inputs = currentStep.querySelectorAll('input[required], select[required]');
+        let isValid = true;
+
+        inputs.forEach(input => {
+            if (!input.checkValidity()) {
+                input.reportValidity();
+                isValid = false;
+            }
+        });
+
+        if (isValid) {
+            document.getElementById('step-1').classList.remove('active');
+            document.getElementById('step-2').classList.add('active');
+            document.getElementById('pill-1').classList.remove('active');
+            document.getElementById('pill-1').classList.add('completed');
+            document.getElementById('pill-2').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    // Page 2 -> Page 1 Transition
+    function prevStep() {
+        document.getElementById('step-2').classList.remove('active');
+        document.getElementById('step-1').classList.add('active');
+        document.getElementById('pill-2').classList.remove('active');
+        document.getElementById('pill-1').classList.remove('completed');
+        document.getElementById('pill-1').classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Form Submission Handler -> Central Flask API
+    registrationForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        // Check validation on Step 2 inputs
+        if (!registrationForm.checkValidity()) {
+            registrationForm.reportValidity();
+            return;
+        }
+
+        // Collect checked skills
+        const skillsSelected = Array.from(document.querySelectorAll('input[name="skills"]:checked'))
+            .map(cb => cb.value);
+
+        // Construct JSON Payload aligned with Flask Pydantic Schema
+        const payload = {
+            full_name: document.getElementById('fullName').value.trim(),
+            dob_month_year: document.getElementById('dobMonthYear').value,
+            gender: document.getElementById('gender').value,
+            nationality: document.getElementById('nationality').value.trim(),
+            hometown_ghana: document.getElementById('hometown').value.trim(),
+            city_germany: document.getElementById('cityGermany').value.trim(),
+            phone_number: document.getElementById('phone').value.trim(),
+            membership_category: document.getElementById('membershipCategory').value,
+            occupation: document.getElementById('occupation').value.trim() || null,
+            skills: skillsSelected.length > 0 ? skillsSelected : null,
+            referral_source: document.getElementById('referral').value || null,
+            volunteer_commitment: document.getElementById('volunteer').value,
+            comments: document.getElementById('comments').value.trim() || null,
+            gdpr_consent_given: document.getElementById('gdpr1').checked &&
+                                document.getElementById('gdpr2').checked &&
+                                document.getElementById('gdpr3').checked
+        };
+
+        // Disable button during network request
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+
+        try {
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert('Registration successful! Your details have been submitted.');
+                window.location.reload();
+            } else {
+                alert(`Submission Error: ${result.message || 'Validation failed on the server.'}`);
+                console.error('Server Validation Errors:', result.errors);
+            }
+        } catch (error) {
+            console.error('Network Error:', error);
+            alert('Unable to connect to the server. Please check your backend connection.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Submit Application';
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard — GC Professionals Club{% endblock %}
+
+{% block header_title %}GC Professionals Club — Admin Dashboard{% endblock %}
+{% block header_subtitle %}Member Records, Search, & Export{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        max-width: 1100px !important;
+    }
+    
+    .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        background: #FAFAFA;
+        padding: 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+
+    .filter-form {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        flex: 1;
+    }
+
+    .filter-form input, .filter-form select {
+        padding: 0.5rem 0.75rem;
+        width: auto;
+        min-width: 180px;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+
+    th, td {
+        padding: 0.75rem 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+    }
+
+    th {
+        background-color: #F3F4F6;
+        font-weight: 600;
+        color: var(--text);
+    }
+
+    tr:hover {
+        background-color: #F9FAFB;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .badge-mentor { background-color: #DEF7EC; color: #03543F; }
+    .badge-mentee { background-color: #E1EFFE; color: #1E429F; }
+    .badge-member { background-color: #F3F4F6; color: #374151; }
+
+    .btn-export {
+        background-color: #1F2937;
+        color: white;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+
+    .btn-export:hover {
+        background-color: #111827;
+    }
+
+    .meta-count {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+    <form class="filter-form" method="GET" action="/admin/members">
+        <input type="text" name="search" placeholder="Search name, city, phone..." value="{{ search_query }}">
+        
+        <select name="category" onchange="this.form.submit()">
+            <option value="">All Categories</option>
+            <option value="Club Member" {% if selected_category == 'Club Member' %}selected{% endif %}>Club Member</option>
+            <option value="Club Mentor" {% if selected_category == 'Club Mentor' %}selected{% endif %}>Club Mentor</option>
+            <option value="Club Mentee" {% if selected_category == 'Club Mentee' %}selected{% endif %}>Club Mentee</option>
+        </select>
+
+        <button type="submit" class="btn btn-secondary">Filter</button>
+        {% if search_query or selected_category %}
+            <a href="/admin/members" class="btn btn-secondary" style="text-decoration:none; text-align:center;">Reset</a>
+        {% endif %}
+    </form>
+
+    <a href="/admin/members/export?category={{ selected_category }}&search={{ search_query }}" class="btn btn-export">
+        📥 Export CSV
+    </a>
+</div>
+
+<div class="meta-count">
+    Showing <strong>{{ members|length }}</strong> member record(s).
+</div>
+
+<div class="table-wrapper" style="margin-top: 0.5rem;">
+    <table>
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Category</th>
+                <th>Location (Germany)</th>
+                <th>Phone</th>
+                <th>Occupation</th>
+                <th>Volunteer</th>
+                <th>Registered Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in members %}
+            <tr>
+                <td><strong>{{ m.full_name }}</strong></td>
+                <td>
+                    {% if m.membership_category == 'Club Mentor' %}
+                        <span class="badge badge-mentor">Club Mentor</span>
+                    {% elif m.membership_category == 'Club Mentee' %}
+                        <span class="badge badge-mentee">Club Mentee</span>
+                    {% else %}
+                        <span class="badge badge-member">Club Member</span>
+                    {% endif %}
+                </td>
+                <td>{{ m.city_germany }}</td>
+                <td>{{ m.phone_number }}</td>
+                <td>{{ m.occupation or '—' }}</td>
+                <td>{{ m.volunteer_commitment }}</td>
+                <td>{{ m.submitted_at.strftime('%Y-%m-%d') if m.submitted_at else '—' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                    No members found matching your search criteria.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
