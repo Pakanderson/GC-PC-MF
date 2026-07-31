@@ -21,18 +21,53 @@ app = Flask(__name__)
 CORS(app)
 
 # ==========================================
+# 1. Database Configuration MYSQL
+# ==========================================
+# DB_USER = os.getenv("DB_USER", "root")
+# DB_PASS = os.getenv("DB_PASS", "your_mysql_password")
+# DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
+# DB_PORT = os.getenv("DB_PORT", "3306")
+# DB_NAME = os.getenv("DB_NAME", "gc_professionals_club_db")
+
+# app.config["SQLALCHEMY_DATABASE_URI"] = (
+#     f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+# )
+# app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+
+# ==========================================
+# 1. Database Configuration Switch to SQLite
+# ==========================================
+# If running locally with MySQL credentials in .env, it uses MySQL.
+# Otherwise, it defaults to a local SQLite database file ('site.db').
+# ==========================================
 # 1. Database Configuration
 # ==========================================
-DB_USER = os.getenv("DB_USER", "root")
-DB_PASS = os.getenv("DB_PASS", "your_mysql_password")
-DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
-DB_PORT = os.getenv("DB_PORT", "3306")
-DB_NAME = os.getenv("DB_NAME", "gc_professionals_club_db")
+db_url = os.getenv("DATABASE_URL")
+db_pass = os.getenv("DB_PASS")
 
-app.config["SQLALCHEMY_DATABASE_URI"] = (
-    f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-)
+if db_url:
+    # --- Priority 1: Render / Cloud PostgreSQL ---
+    if db_url.startswith("postgres://"):
+        db_url = db_url.replace("postgres://", "postgresql://", 1)
+    app.config["SQLALCHEMY_DATABASE_URI"] = db_url
+
+elif db_pass:
+    # --- Priority 2: Local MySQL ---
+    db_user = os.getenv("DB_USER", "root")
+    db_host = os.getenv("DB_HOST", "127.0.0.1")
+    db_port = os.getenv("DB_PORT", "3306")
+    db_name = os.getenv("DB_NAME", "gc_professionals_club_db")
+    app.config["SQLALCHEMY_DATABASE_URI"] = (
+        f"mysql+pymysql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+    )
+
+else:
+    # --- Priority 3: Local SQLite Fallback ---
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///instance/club.db"
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
 
 # ==========================================
 # 2. Mail Configuration
