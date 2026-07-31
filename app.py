@@ -93,11 +93,52 @@ with app.app_context():
 # ==========================================
 # 3. BASIC AUTH HELPER FUNCTIONS (PASTE HERE!)
 # ==========================================
+
+
+# def check_auth(username, password):
+#     """
+#     Checks credentials against environment variables.
+#     Supports primary admin + secondary admin.
+#     """
+#     # Primary Admin Credentials
+#     admin1_user = os.getenv("ADMIN_USER", "admin")
+#     admin1_pass = os.getenv("ADMIN_PASS")
+
+#     # Secondary Admin Credentials
+#     admin2_user = os.getenv("ADMIN2_USER")
+#     admin2_pass = os.getenv("ADMIN2_PASS")
+
+#     # Verify against Admin 1
+#     if admin1_pass and username == admin1_user and password == admin1_pass:
+#         return True
+
+#     # Verify against Admin 2
+#     if admin2_pass and username == admin2_user and password == admin2_pass:
+#         return True
+
+#     return False
+
+
 def check_auth(username, password):
-    """Reads credentials from .env and verifies login."""
-    admin_username = os.getenv("ADMIN_USER", "admin")
-    admin_password = os.getenv("ADMIN_PASS", "GhanaCouncil2026!")
-    return username == admin_username and password == admin_password
+    """
+    Checks user credentials against environment variables for up to 5 admins:
+    ADMIN1_USER/ADMIN1_PASS through ADMIN5_USER/ADMIN5_PASS.
+    """
+    # Fallback to ADMIN_USER/ADMIN_PASS for Admin 1 if ADMIN1 is not explicitly defined
+    admin1_user = os.getenv("ADMIN1_USER", os.getenv("ADMIN_USER", "admin1"))
+    admin1_pass = os.getenv("ADMIN1_PASS", os.getenv("ADMIN_PASS"))
+
+    if admin1_pass and username == admin1_user and password == admin1_pass:
+        return True
+
+    # Check Admins 2 through 5 dynamically
+    for i in range(2, 6):
+        u = os.getenv(f"ADMIN{i}_USER")
+        p = os.getenv(f"ADMIN{i}_PASS")
+        if u and p and username == u and password == p:
+            return True
+
+    return False
 
 
 def requires_auth(f):
