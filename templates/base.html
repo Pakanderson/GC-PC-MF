@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Ghana Council NRW - Professionals Club — Membership Form{% endblock %}</title>
+    <title>{% block title %}Ghana Council NRW Professionals Club{% endblock %}</title>
+    
     <style>
         :root {
-            --primary: #006B3F;       /* Forest Green */
-            --primary-hover: #004D2D;
-            --gold: #FCD116;          /* Ghanaian Gold */
+            --primary: #006B3F;        /* Ghana Green */
+            --primary-hover: #004d25;
+            --gold: #FCD116;           /* Ghana Gold */
+            --red: #CE1126;            /* Ghana Red */
+            --bg: #F4F6F8;
+            --card-bg: #FFFFFF;
             --text: #1F2937;
             --text-muted: #6B7280;
-            --bg: #F3F4F6;
-            --card-bg: #FFFFFF;
-            --border: #D1D5DB;
+            --border: #E5E7EB;
             --error: #DC2626;
             --radius: 8px;
         }
@@ -33,8 +34,8 @@
             padding: 2rem 1rem;
         }
 
-        .form-container {
-            max-width: 720px;
+        .container {
+            max-width: 800px;
             margin: 0 auto;
             background: var(--card-bg);
             border-radius: var(--radius);
@@ -46,20 +47,21 @@
         .header {
             padding: 2rem 2rem 1.5rem;
             border-bottom: 1px solid var(--border);
+            text-align: center;
         }
 
         .header h1 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             color: var(--primary);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.3rem;
         }
 
         .header p {
-            font-size: 0.875rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
         }
 
-        .form-body {
+        .content {
             padding: 2rem;
         }
 
@@ -74,7 +76,7 @@
             height: 6px;
             background-color: var(--border);
             border-radius: 4px;
-            position: relative;
+            transition: background-color 0.3s;
         }
 
         .step-pill.active {
@@ -96,11 +98,17 @@
         h2 {
             font-size: 1.25rem;
             margin-bottom: 1.25rem;
-            color: var(--text);
+            color: var(--primary);
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
         }
 
         .form-group {
             margin-bottom: 1.5rem;
+        }
+
+        .form-group.hidden {
+            display: none;
         }
 
         label {
@@ -114,7 +122,14 @@
             color: var(--error);
         }
 
+        .field-desc {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
         input[type="text"],
+        input[type="email"],
         input[type="tel"],
         input[type="month"],
         select,
@@ -124,8 +139,8 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             font-size: 0.95rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
             background-color: #FAFAFA;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         input:focus,
@@ -139,9 +154,10 @@
 
         textarea {
             resize: vertical;
-            min-height: 100px;
+            min-height: 90px;
         }
 
+        .radio-group,
         .checkbox-group {
             display: flex;
             flex-direction: column;
@@ -151,9 +167,10 @@
 
         .option-label {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 0.6rem;
             font-weight: 400;
+            font-size: 0.9rem;
             cursor: pointer;
         }
 
@@ -161,6 +178,7 @@
             accent-color: var(--primary);
             width: 1.1rem;
             height: 1.1rem;
+            margin-top: 0.1rem;
         }
 
         .button-group {
@@ -205,45 +223,44 @@
             background-color: #D1D5DB;
         }
 
-        .gdpr-box {
+        .consent-box {
             background-color: #F9FAFB;
             border: 1px solid var(--border);
             padding: 1.25rem;
             border-radius: var(--radius);
             margin-top: 1rem;
+            font-size: 0.85rem;
+            color: #4B5563;
+        }
+
+        .text-other {
+            margin-top: 0.4rem;
         }
 
         @media (max-width: 600px) {
-            .form-body,
-            .header {
+            .content, .header {
                 padding: 1.25rem;
             }
-
             .button-group {
                 flex-direction: column-reverse;
             }
-
             .btn {
                 width: 100%;
             }
         }
     </style>
-    {% block extra_css %}{% endblock %}
+    {% block head %}{% endblock %}
 </head>
-
 <body>
-    <div class="form-container">
-        <header class="header">
-            <h1>{% block header_title %}Ghana Council - Professionals Club - Membership Form{% endblock %}</h1>
-            <p>{% block header_subtitle %}Ghana Council NRW e.V. Initiative | Düsseldorf, Germany{% endblock %}</p>
-        </header>
-
-        <main class="form-body">
+    <div class="container">
+        <div class="header">
+            <h1>Ghana Council NRW Professionals Club</h1>
+            <p>Ghana Council NRW e.V. Initiative | Düsseldorf, Germany</p>
+        </div>
+        <div class="content">
             {% block content %}{% endblock %}
-        </main>
+        </div>
     </div>
-
     {% block scripts %}{% endblock %}
 </body>
-
 </html>

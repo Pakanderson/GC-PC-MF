@@ -1,164 +1,358 @@
 {% extends "base.html" %}
 
-{% block title %}GC Professionals Club — Registration Form{% endblock %}
+{% block title %}Membership Form — Ghana Council NRW Professionals Club{% endblock %}
 
 {% block content %}
-<div class="step-indicator" aria-hidden="true">
-    <div class="step-pill active" id="pill-1"></div>
-    <div class="step-pill" id="pill-2"></div>
-</div>
+<form id="membershipForm">
+    <div class="step-indicator">
+        <div class="step-pill active" id="pill-1"></div>
+        <div class="step-pill" id="pill-2"></div>
+    </div>
 
-<form id="registrationForm" novalidate>
-
-    <section class="form-step active" id="step-1">
-        <h2>Page 1 of 2: Personal Details</h2>
+    <div class="form-step active" id="step-1">
+        <h2>Page 1: Personal & Professional Details</h2>
 
         <div class="form-group">
-            <label for="fullName">Full Name (Surname, First Name, Other Name) <span class="required">*</span></label>
-            <input type="text" id="fullName" name="fullName" required placeholder="e.g., Anderson, Paul Kwaku">
+            <label for="fullName">1. Full Name <span class="required">*</span></label>
+            <input type="text" id="fullName" required placeholder="e.g. Kwame Mensah">
         </div>
 
         <div class="form-group">
-            <label for="dobMonthYear">Date of Birth (Month & Year) <span class="required">*</span></label>
-            <input type="month" id="dobMonthYear" name="dobMonthYear" required>
+            <label for="email">2. Email Address <span class="required">*</span></label>
+            <input type="email" id="email" required placeholder="name@example.com">
         </div>
 
         <div class="form-group">
-            <label for="gender">Gender <span class="required">*</span></label>
-            <select id="gender" name="gender" required>
-                <option value="" disabled selected>Select Gender</option>
+            <label for="dobMonthYear">3. Date of Birth (Month & Year)</label>
+            <input type="month" id="dobMonthYear">
+        </div>
+
+        <div class="form-group">
+            <label for="gender">4. Gender</label>
+            <select id="gender">
+                <option value="">-- Select Gender --</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
-                <option value="Other">Other</option>
                 <option value="Prefer not to say">Prefer not to say</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label for="nationality">Nationality <span class="required">*</span></label>
-            <input type="text" id="nationality" name="nationality" required value="Ghanaian" placeholder="e.g., Ghanaian, German">
+            <label for="nationality">5. Nationality</label>
+            <input type="text" id="nationality" placeholder="e.g. Ghanaian / German">
         </div>
 
         <div class="form-group">
-            <label for="hometown">Place of Origin / Hometown (Ghana) <span class="required">*</span></label>
-            <input type="text" id="hometown" name="hometown" required placeholder="e.g., Kumasi, Ashanti Region">
+            <label for="hometownGhana">6. Hometown (Ghana)</label>
+            <input type="text" id="hometownGhana" placeholder="e.g. Kumasi, Ashanti Region">
         </div>
 
         <div class="form-group">
-            <label for="cityGermany">Current City / Town of Residence (Germany) <span class="required">*</span></label>
-            <input type="text" id="cityGermany" name="cityGermany" required placeholder="e.g., Düsseldorf, Siegen, Herne">
+            <label for="residenceGermany">Place of Residence (Germany)</label>
+            <input type="text" id="residenceGermany" placeholder="e.g. Düsseldorf">
         </div>
 
         <div class="form-group">
-            <label for="phone">Phone Number (including country code) <span class="required">*</span></label>
-            <input type="tel" id="phone" name="phone" required placeholder="+49 170 1234567">
+            <label for="phone">Phone / WhatsApp Number <span class="required">*</span></label>
+            <input type="tel" id="phone" required placeholder="+49 176 12345678">
         </div>
 
         <div class="form-group">
-            <label for="membershipCategory">Membership Category <span class="required">*</span></label>
-            <select id="membershipCategory" name="membershipCategory" required>
-                <option value="" disabled selected>Select Category</option>
-                <option value="Club Member">Club Member</option>
-                <option value="Club Mentor">Club Mentor</option>
-                <option value="Club Mentee">Club Mentee</option>
-            </select>
-        </div>
-
-        <div class="button-group">
-            <button type="button" class="btn btn-primary" onclick="nextStep()">Next Page &rarr;</button>
-        </div>
-    </section>
-
-    <section class="form-step" id="step-2">
-        <h2>Page 2 of 2: Professional Details & Engagement</h2>
-
-        <div class="form-group">
-            <label for="occupation">Occupation / Profession</label>
-            <input type="text" id="occupation" name="occupation" placeholder="e.g., Social Scientist, Data Engineer">
-        </div>
-
-        <div class="form-group">
-            <label>Skills & Areas of Expertise (Select all that apply)</label>
-            <div class="checkbox-group">
-                <label class="option-label"><input type="checkbox" name="skills" value="Business & Entrepreneurship"> Business & Entrepreneurship</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="Information Technology / ICT"> Information Technology / ICT</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="Health & Medicine"> Health & Medicine</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="Education & Training"> Education & Training</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="Law & Legal Affairs"> Law & Legal Affairs</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="Arts, Culture & Media"> Arts, Culture & Media</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="Finance & Accounting"> Finance & Accounting</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="Community Development & Social Work"> Community Development & Social Work</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="Engineering & Technology"> Engineering & Technology</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="Other"> Other</label>
+            <label>Preferred Contact Method</label>
+            <div class="radio-group">
+                <label class="option-label"><input type="radio" name="preferredContact" value="Email"> Email</label>
+                <label class="option-label"><input type="radio" name="preferredContact" value="WhatsApp"> WhatsApp</label>
+                <label class="option-label"><input type="radio" name="preferredContact" value="Phone"> Phone</label>
             </div>
         </div>
 
         <div class="form-group">
-            <label for="referral">How did you hear about GC Professionals Club?</label>
-            <select id="referral" name="referral">
-                <option value="" disabled selected>Select an option</option>
-                <option value="Friend / Family Member">Friend / Family Member</option>
-                <option value="Social Media">Social Media (Facebook, Instagram, LinkedIn)</option>
-                <option value="Council Event or Programme">Council Event or Programme</option>
-                <option value="Website">Website</option>
+            <label for="cityRegion">City/Region in Germany</label>
+            <input type="text" id="cityRegion" placeholder="e.g. Cologne / NRW">
+        </div>
+
+        <div class="form-group">
+            <label>Languages Spoken</label>
+            <div class="checkbox-group">
+                <label class="option-label"><input type="checkbox" name="languages" value="English"> English</label>
+                <label class="option-label"><input type="checkbox" name="languages" value="German"> German</label>
+                <label class="option-label"><input type="checkbox" name="languages" value="Twi"> Twi</label>
+                <label class="option-label"><input type="checkbox" name="languages" value="Ga"> Ga</label>
+                <label class="option-label"><input type="checkbox" name="languages" value="Ewe"> Ewe</label>
+                <label class="option-label"><input type="checkbox" id="langOtherCheck" name="languages" value="Other"> Other</label>
+            </div>
+            <input type="text" id="langOtherText" class="text-other hidden" placeholder="Specify other languages">
+        </div>
+
+        <div class="form-group">
+            <label for="jobTitle">7. Current Job Title</label>
+            <input type="text" id="jobTitle" placeholder="e.g. Software Engineer / Consultant">
+        </div>
+
+        <div class="form-group">
+            <label for="industrySector">8. Industry/Sector</label>
+            <select id="industrySector">
+                <option value="">-- Select Industry --</option>
+                <option value="Finance">Finance</option>
+                <option value="IT">IT</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Law">Law</option>
+                <option value="Academia">Academia</option>
+                <option value="Business/Entrepreneurship">Business/Entrepreneurship</option>
                 <option value="Other">Other</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label for="volunteer">Are you willing to volunteer or actively contribute? <span class="required">*</span></label>
-            <select id="volunteer" name="volunteer" required>
-                <option value="" disabled selected>Select Commitment</option>
-                <option value="Yes">Yes</option>
-                <option value="No">No</option>
-                <option value="Maybe">Maybe</option>
-            </select>
+            <label>9. Years of Professional Experience</label>
+            <div class="radio-group">
+                <label class="option-label"><input type="radio" name="yearsExperience" value="<2"> &lt;2 years</label>
+                <label class="option-label"><input type="radio" name="yearsExperience" value="2–5"> 2–5 years</label>
+                <label class="option-label"><input type="radio" name="yearsExperience" value="5–10"> 5–10 years</label>
+                <label class="option-label"><input type="radio" name="yearsExperience" value="10+"> 10+ years</label>
+            </div>
         </div>
 
         <div class="form-group">
-            <label for="comments">Additional Comments or How You Would Like to Contribute</label>
-            <textarea id="comments" name="comments" placeholder="Share any specific projects, ideas, or feedback..."></textarea>
+            <label for="qualificationField">10. Highest Qualification & Field of Study</label>
+            <input type="text" id="qualificationField" placeholder="e.g. B.Sc. Electrical Engineering">
         </div>
 
-        <div class="gdpr-box form-group">
-            <label style="margin-bottom: 0.75rem;">Data Protection & Consent Declaration (GDPR) <span class="required">*</span></label>
+        <div class="form-group">
+            <label>11. Key Skills/Expertise Areas</label>
+            <div class="checkbox-group">
+                <label class="option-label"><input type="checkbox" name="skills" value="Finance"> Finance</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="IT"> IT</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Healthcare"> Healthcare</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Engineering"> Engineering</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Law"> Law</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Academia"> Academia</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Business/Entrepreneurship"> Business/Entrepreneurship</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="linkedinProfile">12. LinkedIn / Professional Profile (Optional)</label>
+            <input type="text" id="linkedinProfile" placeholder="https://linkedin.com/in/yourprofile">
+        </div>
+
+        <div class="form-group">
+            <label for="membershipCategory">13. Membership Category <span class="required">*</span></label>
+            <p class="field-desc">This determines which specific section on Page 2 you should complete.</p>
+            <select id="membershipCategory" required>
+                <option value="">-- Select Category --</option>
+                <option value="Mentor">Mentor</option>
+                <option value="Mentee">Mentee</option>
+                <option value="Member">Member</option>
+            </select>
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-primary" onclick="nextStep()">Next: Page 2 &rarr;</button>
+        </div>
+    </div>
+
+    <div class="form-step" id="step-2">
+        <h2>Page 2: Category Specifics & Engagement</h2>
+        <p class="field-desc" style="margin-bottom: 1.5rem;">Complete the block below corresponding to your selected membership category.</p>
+
+        <div id="blockMentor" class="category-block hidden">
+            <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">Mentor Block</h3>
+            
+            <div class="form-group">
+                <label>14. Areas You're Willing to Mentor In</label>
+                <div class="checkbox-group">
+                    <label class="option-label"><input type="checkbox" name="mentorAreas" value="Career Guidance"> Career Guidance</label>
+                    <label class="option-label"><input type="checkbox" name="mentorAreas" value="Industry Switch"> Industry Switch</label>
+                    <label class="option-label"><input type="checkbox" name="mentorAreas" value="Further Studies"> Further Studies</label>
+                    <label class="option-label"><input type="checkbox" name="mentorAreas" value="Business Advice"> Business Advice</label>
+                    <label class="option-label"><input type="checkbox" name="mentorAreas" value="Networking"> Networking</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>15. Preferred Mentoring Format</label>
+                <div class="radio-group">
+                    <label class="option-label"><input type="radio" name="mentoringFormat" value="1-on-1"> 1-on-1</label>
+                    <label class="option-label"><input type="radio" name="mentoringFormat" value="Group"> Group</label>
+                    <label class="option-label"><input type="radio" name="mentoringFormat" value="Ad hoc"> Ad hoc</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>16. Max Number of Mentees You Can Take</label>
+                <div class="radio-group">
+                    <label class="option-label"><input type="radio" name="maxMentees" value="1"> 1</label>
+                    <label class="option-label"><input type="radio" name="maxMentees" value="2–3"> 2–3</label>
+                    <label class="option-label"><input type="radio" name="maxMentees" value="4+"> 4+</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>17. Availability</label>
+                <div class="checkbox-group">
+                    <label class="option-label"><input type="checkbox" name="mentorAvailability" value="Weekday evenings"> Weekday evenings</label>
+                    <label class="option-label"><input type="checkbox" name="mentorAvailability" value="Weekends"> Weekends</label>
+                    <label class="option-label"><input type="checkbox" name="mentorAvailability" value="Flexible"> Flexible</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>18. Willing to speak at a workshop/webinar?</label>
+                <div class="radio-group">
+                    <label class="option-label"><input type="radio" name="workshopSpeaker" value="Yes"> Yes</label>
+                    <label class="option-label"><input type="radio" name="workshopSpeaker" value="No"> No</label>
+                    <label class="option-label"><input type="radio" name="workshopSpeaker" value="Maybe"> Maybe</label>
+                </div>
+            </div>
+        </div>
+
+        <div id="blockMentee" class="category-block hidden">
+            <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">Mentee Block</h3>
+
+            <div class="form-group">
+                <label>19. What are you seeking from mentorship?</label>
+                <div class="checkbox-group">
+                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Career guidance"> Career guidance</label>
+                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Industry switch"> Industry switch</label>
+                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Further studies"> Further studies</label>
+                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Business advice"> Business advice</label>
+                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Networking"> Networking</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="menteeGoals">20. Specific goals for mentorship</label>
+                <textarea id="menteeGoals" placeholder="Outline what you hope to achieve..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="mentorPreferredBackground">21. Preferred mentor background/expertise</label>
+                <input type="text" id="mentorPreferredBackground" placeholder="e.g. Senior Manager in IT Sector">
+            </div>
+        </div>
+
+        <div id="blockMember" class="category-block hidden">
+            <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">General Member Block</h3>
+
+            <div class="form-group">
+                <label>22. Topics you'd like to see in workshops/webinars</label>
+                <div class="checkbox-group">
+                    <label class="option-label"><input type="checkbox" name="workshopTopics" value="Career growth"> Career growth</label>
+                    <label class="option-label"><input type="checkbox" name="workshopTopics" value="Financial literacy"> Financial literacy</label>
+                    <label class="option-label"><input type="checkbox" name="workshopTopics" value="Entrepreneurship"> Entrepreneurship</label>
+                    <label class="option-label"><input type="checkbox" name="workshopTopics" value="Tech trends"> Tech trends</label>
+                    <label class="option-label"><input type="checkbox" name="workshopTopics" value="Integration & Law"> Integration & Law in Germany</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>23. Willing to help organize events?</label>
+                <div class="radio-group">
+                    <label class="option-label"><input type="radio" name="helpOrganizeEvents" value="Yes"> Yes</label>
+                    <label class="option-label"><input type="radio" name="helpOrganizeEvents" value="No"> No</label>
+                    <label class="option-label"><input type="radio" name="helpOrganizeEvents" value="Maybe"> Maybe</label>
+                </div>
+            </div>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
+        <h3 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 1rem;">Engagement, Consent & Comments</h3>
+
+        <div class="form-group">
+            <label>24. Availability for events</label>
+            <div class="checkbox-group">
+                <label class="option-label"><input type="checkbox" name="eventAvailability" value="Weekday evenings"> Weekday evenings</label>
+                <label class="option-label"><input type="checkbox" name="eventAvailability" value="Weekends"> Weekends</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="hearAboutClub">25. How did you hear about the club?</label>
+            <select id="hearAboutClub">
+                <option value="">-- Select Option --</option>
+                <option value="Social Media">Social Media</option>
+                <option value="Friend or Colleague">Friend or Colleague</option>
+                <option value="Ghana Council Event">Ghana Council Event</option>
+                <option value="Website">Website</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+
+        <div class="consent-box">
+            <p><strong>Data Protection & Consent / Datenschutz & Einwilligung:</strong></p>
+            <p style="margin-top: 0.5rem;"><strong>EN:</strong> The Ghana Council NRW Professionals Club collects this information to organize membership, match mentors and mentees, and communicate about workshops, forums, and webinars. Data is stored securely, used only for these purposes, and not shared with third parties without your explicit permission.</p>
+            <p style="margin-top: 0.5rem;"><strong>DE:</strong> Der Ghana Council NRW Professionals Club erhebt diese Daten, um die Mitgliedschaft zu organisieren, Mentor:innen und Mentees zusammenzuführen und über Workshops, Foren und Webinare zu informieren. Ihre Daten werden sicher gespeichert und nicht ohne Ihre Zustimmung weitergegeben.</p>
+        </div>
+
+        <div class="form-group" style="margin-top: 1rem;">
             <div class="checkbox-group">
                 <label class="option-label">
-                    <input type="checkbox" id="gdpr1" name="gdpr1" required>
-                    <span>I consent to storage and processing of my personal data for membership purposes in accordance with GDPR regulations.</span>
+                    <input type="checkbox" id="gdprConsent" required>
+                    <span>I consent to the Club storing and processing my personal data as described above. / Ich stimme der Speicherung und Verarbeitung zu. <span class="required">*</span></span>
                 </label>
                 <label class="option-label">
-                    <input type="checkbox" id="gdpr2" name="gdpr2" required>
-                    <span>I agree to receive communications regarding events, activities, and membership updates.</span>
-                </label>
-                <label class="option-label">
-                    <input type="checkbox" id="gdpr3" name="gdpr3" required>
-                    <span>I confirm that the information provided is accurate and complete to the best of my knowledge.</span>
+                    <input type="checkbox" id="termsConsent" required>
+                    <span>I have read and agree to the Club's membership terms and code of conduct. / Ich stimme den Mitgliedsbedingungen zu. <span class="required">*</span></span>
                 </label>
             </div>
         </div>
 
-        <div class="button-group">
-            <button type="button" class="btn btn-secondary" onclick="prevStep()">&larr; Back</button>
-            <button type="submit" class="btn btn-primary" id="submitBtn">Submit Application</button>
+        <div class="form-group">
+            <label for="profession">Profession (Standalone line)</label>
+            <input type="text" id="profession" placeholder="e.g. Engineer / Educator">
         </div>
-    </section>
 
+        <div class="form-group">
+            <label for="comments">Comments / Suggestions</label>
+            <textarea id="comments" placeholder="Any additional notes or questions..."></textarea>
+        </div>
+
+        <div class="button-group">
+            <button type="button" class="btn btn-secondary" onclick="prevStep()">&larr; Back: Page 1</button>
+            <button type="submit" id="submitBtn" class="btn btn-primary">Submit Application</button>
+        </div>
+    </div>
 </form>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    const registrationForm = document.getElementById('registrationForm');
-    const submitBtn = document.getElementById('submitBtn');
+    // Handles "Other" text input toggle for Languages
+    document.getElementById('langOtherCheck').addEventListener('change', function(e) {
+        const textInput = document.getElementById('langOtherText');
+        if (e.target.checked) {
+            textInput.classList.remove('hidden');
+        } else {
+            textInput.classList.add('hidden');
+            textInput.value = '';
+        }
+    });
 
-    // Page 1 -> Page 2 Transition & Input Check
+    // Dynamically shows matching block on Page 2 based on Category selected
+    function updateCategoryBlocks() {
+        const category = document.getElementById('membershipCategory').value;
+        document.querySelectorAll('.category-block').forEach(b => b.classList.add('hidden'));
+
+        if (category === 'Mentor') {
+            document.getElementById('blockMentor').classList.remove('hidden');
+        } else if (category === 'Mentee') {
+            document.getElementById('blockMentee').classList.remove('hidden');
+        } else if (category === 'Member') {
+            document.getElementById('blockMember').classList.remove('hidden');
+        }
+    }
+
+    document.getElementById('membershipCategory').addEventListener('change', updateCategoryBlocks);
+
+    // Step 1 -> Step 2 Navigation
     function nextStep() {
-        const currentStep = document.getElementById('step-1');
-        const inputs = currentStep.querySelectorAll('input[required], select[required]');
+        const step1 = document.getElementById('step-1');
+        const requiredInputs = step1.querySelectorAll('input[required], select[required]');
         let isValid = true;
 
-        inputs.forEach(input => {
+        requiredInputs.forEach(input => {
             if (!input.checkValidity()) {
                 input.reportValidity();
                 isValid = false;
@@ -171,11 +365,12 @@
             document.getElementById('pill-1').classList.remove('active');
             document.getElementById('pill-1').classList.add('completed');
             document.getElementById('pill-2').classList.add('active');
+            updateCategoryBlocks();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }
 
-    // Page 2 -> Page 1 Transition
+    // Step 2 -> Step 1 Navigation
     function prevStep() {
         document.getElementById('step-2').classList.remove('active');
         document.getElementById('step-1').classList.add('active');
@@ -185,41 +380,80 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Form Submission Handler -> Central Flask API
-    registrationForm.addEventListener('submit', async function (e) {
+    // Collect checked values for a group
+    function getCheckedValues(name) {
+        return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
+    }
+
+    // Get selected radio value
+    function getRadioValue(name) {
+        const selected = document.querySelector(`input[name="${name}"]:checked`);
+        return selected ? selected.value : null;
+    }
+
+    // Form Submission Handler
+    document.getElementById('membershipForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        // Check validation on Step 2 inputs
-        if (!registrationForm.checkValidity()) {
-            registrationForm.reportValidity();
+        if (!this.checkValidity()) {
+            this.reportValidity();
             return;
         }
 
-        // Collect checked skills
-        const skillsSelected = Array.from(document.querySelectorAll('input[name="skills"]:checked'))
-            .map(cb => cb.value);
+        // Handle Languages (combine checked items + 'Other' text)
+        let languages = getCheckedValues('languages');
+        if (document.getElementById('langOtherCheck').checked) {
+            const otherVal = document.getElementById('langOtherText').value.trim();
+            if (otherVal) languages.push(`Other: ${otherVal}`);
+        }
 
-        // Construct JSON Payload aligned with Flask Pydantic Schema
+        // Construct JSON Payload
         const payload = {
             full_name: document.getElementById('fullName').value.trim(),
-            dob_month_year: document.getElementById('dobMonthYear').value,
-            gender: document.getElementById('gender').value,
-            nationality: document.getElementById('nationality').value.trim(),
-            hometown_ghana: document.getElementById('hometown').value.trim(),
-            city_germany: document.getElementById('cityGermany').value.trim(),
-            phone_number: document.getElementById('phone').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            dob_month_year: document.getElementById('dobMonthYear').value || null,
+            gender: document.getElementById('gender').value || null,
+            nationality: document.getElementById('nationality').value.trim() || null,
+            hometown_ghana: document.getElementById('hometownGhana').value.trim() || null,
+            residence_germany: document.getElementById('residenceGermany').value.trim() || null,
+            phone: document.getElementById('phone').value.trim(),
+            preferred_contact_method: getRadioValue('preferredContact'),
+            city_region_germany: document.getElementById('cityRegion').value.trim() || null,
+            languages_spoken: languages,
+            job_title: document.getElementById('jobTitle').value.trim() || null,
+            industry_sector: document.getElementById('industrySector').value || null,
+            years_experience: getRadioValue('yearsExperience'),
+            qualification_field: document.getElementById('qualificationField').value.trim() || null,
+            key_skills: getCheckedValues('skills'),
+            linkedin_profile: document.getElementById('linkedinProfile').value.trim() || null,
             membership_category: document.getElementById('membershipCategory').value,
-            occupation: document.getElementById('occupation').value.trim() || null,
-            skills: skillsSelected.length > 0 ? skillsSelected : null,
-            referral_source: document.getElementById('referral').value || null,
-            volunteer_commitment: document.getElementById('volunteer').value,
-            comments: document.getElementById('comments').value.trim() || null,
-            gdpr_consent_given: document.getElementById('gdpr1').checked &&
-                                document.getElementById('gdpr2').checked &&
-                                document.getElementById('gdpr3').checked
+            
+            // Mentor Fields
+            mentor_areas: getCheckedValues('mentorAreas'),
+            mentoring_format: getRadioValue('mentoringFormat'),
+            max_mentees: getRadioValue('maxMentees'),
+            mentor_availability: getCheckedValues('mentorAvailability'),
+            workshop_speaker: getRadioValue('workshopSpeaker'),
+
+            // Mentee Fields
+            mentee_seeking: getCheckedValues('menteeSeeking'),
+            mentee_goals: document.getElementById('menteeGoals').value.trim() || null,
+            mentor_preferred_background: document.getElementById('mentorPreferredBackground').value.trim() || null,
+
+            // Member Fields
+            workshop_topics: getCheckedValues('workshopTopics'),
+            help_organize_events: getRadioValue('helpOrganizeEvents'),
+
+            // Engagement & Consent
+            event_availability: getCheckedValues('eventAvailability'),
+            hear_about_club: document.getElementById('hearAboutClub').value || null,
+            gdpr_consent: document.getElementById('gdprConsent').checked,
+            terms_consent: document.getElementById('termsConsent').checked,
+            profession: document.getElementById('profession').value.trim() || null,
+            comments: document.getElementById('comments').value.trim() || null
         };
 
-        // Disable button during network request
+        const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Submitting...';
 
@@ -233,15 +467,15 @@
             const result = await response.json();
 
             if (response.ok) {
-                alert('Registration successful! Your details have been submitted.');
+                alert(`Registration successful! Your Member ID is: ${result.member_id}`);
                 window.location.reload();
             } else {
-                alert(`Submission Error: ${result.message || 'Validation failed on the server.'}`);
-                console.error('Server Validation Errors:', result.errors);
+                alert(`Submission Error: ${result.message || 'Validation failed'}`);
+                console.error(result.errors);
             }
-        } catch (error) {
-            console.error('Network Error:', error);
-            alert('Unable to connect to the server. Please check your backend connection.');
+        } catch (err) {
+            console.error('Network error:', err);
+            alert('Unable to reach backend server. Please check your connection.');
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Submit Application';
