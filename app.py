@@ -25,21 +25,22 @@ app = Flask(__name__)
 CORS(app)
 
 # ==========================================
-# 1. Database Configuration (3-Tier Fallback)
+# 1. Database Configuration
 # ==========================================
 db_url = os.getenv("DATABASE_URL")
-db_pass = os.getenv("DB_PASS")
 
 if db_url and db_url.strip():
-    # --- Priority 1: Render / Cloud PostgreSQL ---
+    # --- Production / Cloud Database (Render PostgreSQL) ---
     db_url = db_url.strip()
+    # Fix Render's legacy 'postgres://' prefix for SQLAlchemy
     if db_url.startswith("postgres://"):
         db_url = db_url.replace("postgres://", "postgresql://", 1)
     app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 
-elif db_pass and db_pass.strip():
-    # --- Priority 2: Local MySQL ---
+elif os.getenv("DB_PASS") and os.getenv("DB_PASS").strip():
+    # --- Local Development (MySQL) ---
     db_user = os.getenv("DB_USER", "root")
+    db_pass = os.getenv("DB_PASS").strip()
     db_host = os.getenv("DB_HOST", "127.0.0.1")
     db_port = os.getenv("DB_PORT", "3306")
     db_name = os.getenv("DB_NAME", "gc_professionals_club_db")
@@ -48,11 +49,12 @@ elif db_pass and db_pass.strip():
     )
 
 else:
-    # --- Priority 3: SQLite Fallback (Absolute Path Fix for Render) ---
+    # --- Local Emergency Fallback Only (SQLite) ---
     instance_path = os.path.join(app.root_path, "instance")
     os.makedirs(instance_path, exist_ok=True)
     db_file_path = os.path.join(instance_path, "club.db")
     app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_file_path}"
+    print("⚠️ WARNING: Running on local SQLite! Data will reset on deployment.")
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
