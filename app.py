@@ -20,11 +20,15 @@ CORS(app)
 db_url = os.getenv("DATABASE_URL")
 db_pass = os.getenv("DB_PASS")
 
-if db_url:
+if db_url and db_url.strip():
+    # --- Priority 1: Render / Cloud PostgreSQL ---
+    db_url = db_url.strip()
     if db_url.startswith("postgres://"):
         db_url = db_url.replace("postgres://", "postgresql://", 1)
     app.config["SQLALCHEMY_DATABASE_URI"] = db_url
-elif db_pass:
+
+elif db_pass and db_pass.strip():
+    # --- Priority 2: Local MySQL ---
     db_user = os.getenv("DB_USER", "root")
     db_host = os.getenv("DB_HOST", "127.0.0.1")
     db_port = os.getenv("DB_PORT", "3306")
@@ -32,9 +36,13 @@ elif db_pass:
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         f"mysql+pymysql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
     )
+
 else:
-    os.makedirs(os.path.join(app.root_path, "instance"), exist_ok=True)
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///instance/club.db"
+    # --- Priority 3: SQLite Fallback (Absolute Path Fix for Render) ---
+    instance_path = os.path.join(app.root_path, "instance")
+    os.makedirs(instance_path, exist_ok=True)
+    db_file_path = os.path.join(instance_path, "club.db")
+    app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{db_file_path}"
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
