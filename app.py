@@ -38,7 +38,6 @@ elif db_pass:
 
 else:
     # --- Priority 3: Local SQLite Fallback ---
-    # Ensure instance folder exists for SQLite
     os.makedirs(os.path.join(app.root_path, "instance"), exist_ok=True)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///instance/club.db"
 
@@ -54,7 +53,7 @@ app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME", "your-email@gmail.com")
 app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD", "your-app-password")
 app.config["MAIL_DEFAULT_SENDER"] = (
     "Ghana Council NRW e.V.",
-    os.getenv("MAIL_USERNAME", "your-email@gmail.com"),
+    os.getenv("MAIL_USERNAME", "info@ghanacouncil-nrw.de"),
 )
 
 # Initialize Extensions
@@ -63,7 +62,6 @@ mail = Mail(app)
 
 # Initialize Tables Contextually
 with app.app_context():
-    # db.drop_all()
     db.create_all()
 
 
@@ -81,12 +79,13 @@ def send_confirmation_email(recipient_email, full_name, category):
 
 Thank you for registering with the Ghana Council NRW Professionals Club!
 
-We have successfully received your application as a: {category}.
+We have successfully received your membership application as a: {category}.
 Our administrative team is reviewing your profile and will follow up with event invites, networking updates, or mentorship matching shortly.
 
 Kind regards,
 Ghana Council NRW e.V. Initiative
 Düsseldorf, Germany
+info@ghanacouncil-nrw.de
 www.ghanacouncil-nrw.de
 """
         msg.html = f"""
@@ -100,7 +99,7 @@ www.ghanacouncil-nrw.de
                 <p style="margin: 0; font-weight: bold;">Membership Category: <span style="color: #006B3F;">{category}</span></p>
                 <p style="margin: 5px 0 0 0; color: #555;">Status: Application Received & Under Review</p>
             </div>
-            <p>If you have any questions or need to update your details, please feel free to reach out to us.</p>
+            <p>If you have any questions or need to update your details, please feel free to contact us at <a href="mailto:info@ghanacouncil-nrw.de">info@ghanacouncil-nrw.de</a>.</p>
             <br>
             <p style="margin: 0;">Warm regards,</p>
             <p style="margin: 0; font-weight: bold;">Ghana Council NRW e.V. Team</p>
@@ -127,7 +126,7 @@ def home():
 
 @app.route("/api/register", methods=["POST"])
 def register_member():
-    """Handles submission of Page 1 (Member) or Page 1 + Page 2 (Mentor/Mentee) form data."""
+    """Handles submission of Page 1 (Member/Mentee) or Page 1 + Page 2 (Mentor) data."""
     data = request.get_json()
     if not data:
         return jsonify({"status": "error", "message": "No JSON payload provided"}), 400
@@ -167,6 +166,8 @@ def register_member():
 
     # Map payload to database model
     new_member = CouncilMember(
+        # Profile Photo
+        profile_photo=validated_data.profile_photo,
         # Page 1: Personal & Contact Info
         full_name=validated_data.full_name,
         email=validated_data.email,
@@ -179,39 +180,38 @@ def register_member():
         preferred_contact_method=validated_data.preferred_contact_method,
         city_region_germany=validated_data.city_region_germany,
         languages_spoken=validated_data.languages_spoken,
-        # Professional Background
+        hear_about_club=validated_data.hear_about_club,
+        profession=validated_data.profession,
+        comments=validated_data.comments,
+        membership_category=validated_data.membership_category,
+        # Mentee Block (Page 1)
+        mentee_seeking=validated_data.mentee_seeking,
+        mentee_goals=validated_data.mentee_goals,
+        mentor_preferred_background=validated_data.mentor_preferred_background,
+        # Member Block (Page 1)
+        workshop_topics=validated_data.workshop_topics,
+        help_organize_events=validated_data.help_organize_events,
+        # Mentor Professional & Matching Fields (Page 2)
         job_title=validated_data.job_title,
         industry_sector=validated_data.industry_sector,
         years_experience=validated_data.years_experience,
         qualification_field=validated_data.qualification_field,
         key_skills=validated_data.key_skills,
         linkedin_profile=validated_data.linkedin_profile,
-        membership_category=validated_data.membership_category,
-        # Category Specifics (Mentor)
         mentor_areas=validated_data.mentor_areas,
         mentoring_format=validated_data.mentoring_format,
         max_mentees=validated_data.max_mentees,
         mentor_availability=validated_data.mentor_availability,
         workshop_speaker=validated_data.workshop_speaker,
-        # Category Specifics (Mentee)
-        mentee_seeking=validated_data.mentee_seeking,
-        mentee_goals=validated_data.mentee_goals,
-        mentor_preferred_background=validated_data.mentor_preferred_background,
-        # Category Specifics (Member)
-        workshop_topics=validated_data.workshop_topics,
-        help_organize_events=validated_data.help_organize_events,
-        # Engagement, Consent & General Comments
+        # Engagement & Consent
         event_availability=validated_data.event_availability,
-        hear_about_club=validated_data.hear_about_club,
         gdpr_consent=validated_data.gdpr_consent,
         terms_consent=validated_data.terms_consent,
-        profession=validated_data.profession,
-        comments=validated_data.comments,
     )
 
     try:
         db.session.add(new_member)
-        db.session.flush()  # Flushes session to acquire the numeric ID
+        db.session.flush()  # Acquire auto-increment ID
 
         # Generate custom readable ID (e.g., GC-PC-001)
         new_member.generate_formatted_id()
@@ -283,8 +283,7 @@ def export_members_csv():
             "Email",
             "Phone",
             "Category",
-            "Job Title",
-            "Industry",
+            "Profession / Job Title",
             "City",
             "Submitted At",
         ]
@@ -298,8 +297,7 @@ def export_members_csv():
                 m.email,
                 m.phone,
                 m.membership_category,
-                m.job_title,
-                m.industry_sector,
+                m.job_title or m.profession or "",
                 m.city_region_germany,
                 m.submitted_at.strftime("%Y-%m-%d %H:%M:%S") if m.submitted_at else "",
             ]

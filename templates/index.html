@@ -3,14 +3,54 @@
 {% block title %}Membership Form — Ghana Council NRW Professionals Club{% endblock %}
 
 {% block content %}
+<style>
+    .photo-upload-wrapper {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        border: 2px dashed var(--border);
+        border-radius: var(--radius);
+        background: #FAFAFA;
+    }
+    .photo-preview {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid var(--primary);
+        background-color: #E5E7EB;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-align: center;
+    }
+</style>
+
 <form id="membershipForm">
-    <div class="step-indicator" id="stepIndicator">
+    <div class="step-indicator hidden" id="stepIndicator">
         <div class="step-pill active" id="pill-1"></div>
         <div class="step-pill" id="pill-2"></div>
     </div>
 
     <div class="form-step active" id="step-1">
-        <h2>Personal & Professional Background</h2>
+        <h2>Personal & Contact Information</h2>
+
+        <div class="form-group">
+            <label>Profile Photo (Optional)</label>
+            <div class="photo-upload-wrapper">
+                <img id="photoPreview" class="photo-preview" src="" alt="Preview" style="display:none;">
+                <div id="photoPlaceholder" class="photo-preview">No Photo</div>
+                <div>
+                    <input type="file" id="photoInput" accept="image/*" style="font-size: 0.85rem;">
+                    <p class="field-desc" style="margin-top: 0.4rem;">Upload a small headshot image. It will be cropped and saved automatically.</p>
+                </div>
+            </div>
+            <input type="hidden" id="profilePhotoBase64">
+        </div>
 
         <div class="form-group">
             <label for="fullName">1. Full Name <span class="required">*</span></label>
@@ -85,70 +125,66 @@
         </div>
 
         <div class="form-group">
-            <label for="jobTitle">7. Current Job Title</label>
-            <input type="text" id="jobTitle" placeholder="e.g. Software Engineer / Consultant">
-        </div>
-
-        <div class="form-group">
-            <label for="industrySector">8. Industry/Sector</label>
-            <select id="industrySector">
-                <option value="">-- Select Industry --</option>
-                <option value="Finance">Finance</option>
-                <option value="IT">IT</option>
-                <option value="Healthcare">Healthcare</option>
-                <option value="Engineering">Engineering</option>
-                <option value="Law">Law</option>
-                <option value="Academia">Academia</option>
-                <option value="Business/Entrepreneurship">Business/Entrepreneurship</option>
+            <label for="hearAboutClub">How did you hear about the club?</label>
+            <select id="hearAboutClub">
+                <option value="">-- Select Option --</option>
+                <option value="Social Media">Social Media</option>
+                <option value="Friend or Colleague">Friend or Colleague</option>
+                <option value="Ghana Council Event">Ghana Council Event</option>
+                <option value="Website">Website</option>
                 <option value="Other">Other</option>
             </select>
         </div>
 
         <div class="form-group">
-            <label>9. Years of Professional Experience</label>
-            <div class="radio-group">
-                <label class="option-label"><input type="radio" name="yearsExperience" value="<2"> &lt;2 years</label>
-                <label class="option-label"><input type="radio" name="yearsExperience" value="2–5"> 2–5 years</label>
-                <label class="option-label"><input type="radio" name="yearsExperience" value="5–10"> 5–10 years</label>
-                <label class="option-label"><input type="radio" name="yearsExperience" value="10+"> 10+ years</label>
-            </div>
+            <label for="profession">Profession</label>
+            <input type="text" id="profession" placeholder="e.g. Engineer / Nurse / Student">
         </div>
 
         <div class="form-group">
-            <label for="qualificationField">10. Highest Qualification & Field of Study</label>
-            <input type="text" id="qualificationField" placeholder="e.g. B.Sc. Electrical Engineering">
+            <label for="comments">Comments / Suggestions</label>
+            <textarea id="comments" placeholder="Any additional notes or questions..."></textarea>
         </div>
 
         <div class="form-group">
-            <label>11. Key Skills/Expertise Areas</label>
-            <div class="checkbox-group">
-                <label class="option-label"><input type="checkbox" name="skills" value="Finance"> Finance</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="IT"> IT</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="Healthcare"> Healthcare</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="Engineering"> Engineering</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="Law"> Law</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="Academia"> Academia</label>
-                <label class="option-label"><input type="checkbox" name="skills" value="Business/Entrepreneurship"> Business/Entrepreneurship</label>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="linkedinProfile">12. LinkedIn / Professional Profile (Optional)</label>
-            <input type="text" id="linkedinProfile" placeholder="https://linkedin.com/in/yourprofile">
-        </div>
-
-        <div class="form-group">
-            <label for="membershipCategory">13. Membership Category <span class="required">*</span></label>
-            <p class="field-desc">Selecting 'Member' completes your application on this page. Selecting 'Mentor' or 'Mentee' proceeds to Page 2 for matching questions.</p>
+            <label for="membershipCategory">Membership Category <span class="required">*</span></label>
+            <p class="field-desc">Selecting 'Member' or 'Mentee' allows direct submission on this page. Selecting 'Mentor' proceeds to Page 2 for professional matching questions.</p>
             <select id="membershipCategory" required>
                 <option value="">-- Select Category --</option>
+                <option value="Mentee">Mentee</option>
                 <option value="Member">Member</option>
                 <option value="Mentor">Mentor</option>
-                <option value="Mentee">Mentee</option>
             </select>
         </div>
 
-        <div id="inlineMemberConsent" class="hidden" style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+        <div id="blockMenteeP1" class="category-block hidden" style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+            <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">Mentee Questions</h3>
+
+            <div class="form-group">
+                <label>What are you seeking from mentorship?</label>
+                <div class="checkbox-group">
+                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Career guidance"> Career guidance</label>
+                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Industry switch"> Industry switch</label>
+                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Further studies"> Further studies</label>
+                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Business advice"> Business advice</label>
+                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Networking"> Networking</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="menteeGoals">Specific goals for mentorship</label>
+                <textarea id="menteeGoals" placeholder="Outline what you hope to achieve..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="mentorPreferredBackground">Preferred mentor background/expertise</label>
+                <input type="text" id="mentorPreferredBackground" placeholder="e.g. Senior Manager in IT Sector">
+            </div>
+        </div>
+
+        <div id="blockMemberP1" class="category-block hidden" style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+            <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">General Member Questions</h3>
+
             <div class="form-group">
                 <label>Topics you'd like to see in workshops/webinars</label>
                 <div class="checkbox-group">
@@ -168,165 +204,163 @@
                     <label class="option-label"><input type="radio" name="helpOrganizeMember" value="Maybe"> Maybe</label>
                 </div>
             </div>
+        </div>
 
+        <div id="consentBlockP1" class="hidden" style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
             <div class="consent-box">
                 <p><strong>Data Protection & Consent / Datenschutz & Einwilligung:</strong></p>
-                <p style="margin-top: 0.5rem;"><strong>EN:</strong> The Ghana Council NRW Professionals Club collects this information to organize membership and communicate about workshops, forums, and webinars. Data is stored securely and not shared without permission.</p>
+                <p style="margin-top: 0.5rem;"><strong>EN:</strong> The Ghana Council NRW Professionals Club collects this information to organize membership, match mentors and mentees, and communicate about workshops, forums, and webinars. Data is stored securely, used only for these purposes, and not shared with third parties without your explicit permission. Contact <a href="mailto:info@ghanacouncil-nrw.de">info@ghanacouncil-nrw.de</a> to access, correct, or delete your data.</p>
+                <p style="margin-top: 0.5rem;"><strong>DE:</strong> Der Ghana Council NRW Professionals Club erhebt diese Daten, um die Mitgliedschaft zu organisieren, Mentor:innen und Mentees zusammenzuführen und über Workshops, Foren und Webinare zu informieren. Ihre Daten werden sicher gespeichert, ausschließlich für diese Zwecke verwendet und nicht ohne Ihre ausdrückliche Zustimmung an Dritte weitergegeben. Für Auskunft, Berichtigung oder Löschung wenden Sie sich bitte an <a href="mailto:info@ghanacouncil-nrw.de">info@ghanacouncil-nrw.de</a>.</p>
             </div>
 
             <div class="form-group" style="margin-top: 1rem;">
                 <div class="checkbox-group">
                     <label class="option-label">
-                        <input type="checkbox" id="gdprConsentMember">
-                        <span>I consent to data processing / Ich stimme zu <span class="required">*</span></span>
+                        <input type="checkbox" id="gdprConsentP1">
+                        <span>I consent to the Club storing and processing my personal data as described above. / Ich stimme zu, dass der Club meine personenbezogenen Daten wie oben beschrieben speichert und verarbeitet. <span class="required">*</span></span>
                     </label>
                     <label class="option-label">
-                        <input type="checkbox" id="termsConsentMember">
-                        <span>I agree to terms / Ich stimme den Bedingungen zu <span class="required">*</span></span>
+                        <input type="checkbox" id="termsConsentP1">
+                        <span>I have read and agree to the Club's membership terms and code of conduct. / Ich habe die Mitgliedsbedingungen und den Verhaltenskodex gelesen und stimme ihnen zu. <span class="required">*</span></span>
                     </label>
                 </div>
             </div>
         </div>
 
         <div class="button-group">
-            <button type="button" id="nextPageBtn" class="btn btn-primary" onclick="nextStep()">Next: Page 2 &rarr;</button>
+            <button type="button" id="nextPageBtn" class="btn btn-primary hidden" onclick="nextStep()">Next: Page 2 (Professional Info) &rarr;</button>
             <button type="submit" id="submitDirectBtn" class="btn btn-primary hidden">Submit Application</button>
         </div>
     </div>
 
     <div class="form-step" id="step-2">
-        <h2>Category Specific Questions</h2>
-
-        <div id="blockMentor" class="category-block hidden">
-            <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">Mentor Questions</h3>
-            
-            <div class="form-group">
-                <label>14. Areas You're Willing to Mentor In</label>
-                <div class="checkbox-group">
-                    <label class="option-label"><input type="checkbox" name="mentorAreas" value="Career Guidance"> Career Guidance</label>
-                    <label class="option-label"><input type="checkbox" name="mentorAreas" value="Industry Switch"> Industry Switch</label>
-                    <label class="option-label"><input type="checkbox" name="mentorAreas" value="Further Studies"> Further Studies</label>
-                    <label class="option-label"><input type="checkbox" name="mentorAreas" value="Business Advice"> Business Advice</label>
-                    <label class="option-label"><input type="checkbox" name="mentorAreas" value="Networking"> Networking</label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>15. Preferred Mentoring Format</label>
-                <div class="radio-group">
-                    <label class="option-label"><input type="radio" name="mentoringFormat" value="1-on-1"> 1-on-1</label>
-                    <label class="option-label"><input type="radio" name="mentoringFormat" value="Group"> Group</label>
-                    <label class="option-label"><input type="radio" name="mentoringFormat" value="Ad hoc"> Ad hoc</label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>16. Max Number of Mentees You Can Take</label>
-                <div class="radio-group">
-                    <label class="option-label"><input type="radio" name="maxMentees" value="1"> 1</label>
-                    <label class="option-label"><input type="radio" name="maxMentees" value="2–3"> 2–3</label>
-                    <label class="option-label"><input type="radio" name="maxMentees" value="4+"> 4+</label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>17. Availability</label>
-                <div class="checkbox-group">
-                    <label class="option-label"><input type="checkbox" name="mentorAvailability" value="Weekday evenings"> Weekday evenings</label>
-                    <label class="option-label"><input type="checkbox" name="mentorAvailability" value="Weekends"> Weekends</label>
-                    <label class="option-label"><input type="checkbox" name="mentorAvailability" value="Flexible"> Flexible</label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>18. Willing to speak at a workshop/webinar?</label>
-                <div class="radio-group">
-                    <label class="option-label"><input type="radio" name="workshopSpeaker" value="Yes"> Yes</label>
-                    <label class="option-label"><input type="radio" name="workshopSpeaker" value="No"> No</label>
-                    <label class="option-label"><input type="radio" name="workshopSpeaker" value="Maybe"> Maybe</label>
-                </div>
-            </div>
-        </div>
-
-        <div id="blockMentee" class="category-block hidden">
-            <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">Mentee Questions</h3>
-
-            <div class="form-group">
-                <label>19. What are you seeking from mentorship?</label>
-                <div class="checkbox-group">
-                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Career guidance"> Career guidance</label>
-                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Industry switch"> Industry switch</label>
-                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Further studies"> Further studies</label>
-                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Business advice"> Business advice</label>
-                    <label class="option-label"><input type="checkbox" name="menteeSeeking" value="Networking"> Networking</label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="menteeGoals">20. Specific goals for mentorship</label>
-                <textarea id="menteeGoals" placeholder="Outline what you hope to achieve..."></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="mentorPreferredBackground">21. Preferred mentor background/expertise</label>
-                <input type="text" id="mentorPreferredBackground" placeholder="e.g. Senior Manager in IT Sector">
-            </div>
-        </div>
-
-        <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
-        <h3 style="font-size: 1.1rem; color: var(--primary); margin-bottom: 1rem;">Engagement, Consent & Comments</h3>
+        <h2>Professional Background & Mentorship Details</h2>
 
         <div class="form-group">
-            <label>24. Availability for events</label>
-            <div class="checkbox-group">
-                <label class="option-label"><input type="checkbox" name="eventAvailability" value="Weekday evenings"> Weekday evenings</label>
-                <label class="option-label"><input type="checkbox" name="eventAvailability" value="Weekends"> Weekends</label>
-            </div>
+            <label for="jobTitle">Current Job Title</label>
+            <input type="text" id="jobTitle" placeholder="e.g. Senior Software Engineer / Manager">
         </div>
 
         <div class="form-group">
-            <label for="hearAboutClub">25. How did you hear about the club?</label>
-            <select id="hearAboutClub">
-                <option value="">-- Select Option --</option>
-                <option value="Social Media">Social Media</option>
-                <option value="Friend or Colleague">Friend or Colleague</option>
-                <option value="Ghana Council Event">Ghana Council Event</option>
-                <option value="Website">Website</option>
+            <label for="industrySector">Industry / Sector</label>
+            <select id="industrySector">
+                <option value="">-- Select Industry --</option>
+                <option value="Finance">Finance</option>
+                <option value="IT">IT</option>
+                <option value="Healthcare">Healthcare</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Law">Law</option>
+                <option value="Academia">Academia</option>
+                <option value="Business/Entrepreneurship">Business/Entrepreneurship</option>
                 <option value="Other">Other</option>
             </select>
         </div>
 
-        <div class="consent-box">
+        <div class="form-group">
+            <label>Years of Professional Experience</label>
+            <div class="radio-group">
+                <label class="option-label"><input type="radio" name="yearsExperience" value="<2"> &lt;2 years</label>
+                <label class="option-label"><input type="radio" name="yearsExperience" value="2–5"> 2–5 years</label>
+                <label class="option-label"><input type="radio" name="yearsExperience" value="5–10"> 5–10 years</label>
+                <label class="option-label"><input type="radio" name="yearsExperience" value="10+"> 10+ years</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="qualificationField">Highest Qualification & Field of Study</label>
+            <input type="text" id="qualificationField" placeholder="e.g. M.Sc. Data Science">
+        </div>
+
+        <div class="form-group">
+            <label>Key Skills / Expertise Areas</label>
+            <div class="checkbox-group">
+                <label class="option-label"><input type="checkbox" name="skills" value="Finance"> Finance</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="IT"> IT</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Healthcare"> Healthcare</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Engineering"> Engineering</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Law"> Law</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Academia"> Academia</label>
+                <label class="option-label"><input type="checkbox" name="skills" value="Business/Entrepreneurship"> Business/Entrepreneurship</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="linkedinProfile">LinkedIn / Professional Profile (Optional)</label>
+            <input type="text" id="linkedinProfile" placeholder="https://linkedin.com/in/yourprofile">
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--border); margin: 2rem 0;">
+        <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">Mentorship Preferences</h3>
+
+        <div class="form-group">
+            <label>Areas You're Willing to Mentor In</label>
+            <div class="checkbox-group">
+                <label class="option-label"><input type="checkbox" name="mentorAreas" value="Career Guidance"> Career Guidance</label>
+                <label class="option-label"><input type="checkbox" name="mentorAreas" value="Industry Switch"> Industry Switch</label>
+                <label class="option-label"><input type="checkbox" name="mentorAreas" value="Further Studies"> Further Studies</label>
+                <label class="option-label"><input type="checkbox" name="mentorAreas" value="Business Advice"> Business Advice</label>
+                <label class="option-label"><input type="checkbox" name="mentorAreas" value="Networking"> Networking</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Preferred Mentoring Format</label>
+            <div class="radio-group">
+                <label class="option-label"><input type="radio" name="mentoringFormat" value="1-on-1"> 1-on-1</label>
+                <label class="option-label"><input type="radio" name="mentoringFormat" value="Group"> Group</label>
+                <label class="option-label"><input type="radio" name="mentoringFormat" value="Ad hoc"> Ad hoc</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Max Number of Mentees You Can Take</label>
+            <div class="radio-group">
+                <label class="option-label"><input type="radio" name="maxMentees" value="1"> 1</label>
+                <label class="option-label"><input type="radio" name="maxMentees" value="2–3"> 2–3</label>
+                <label class="option-label"><input type="radio" name="maxMentees" value="4+"> 4+</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Availability</label>
+            <div class="checkbox-group">
+                <label class="option-label"><input type="checkbox" name="mentorAvailability" value="Weekday evenings"> Weekday evenings</label>
+                <label class="option-label"><input type="checkbox" name="mentorAvailability" value="Weekends"> Weekends</label>
+                <label class="option-label"><input type="checkbox" name="mentorAvailability" value="Flexible"> Flexible</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Willing to speak at a workshop/webinar?</label>
+            <div class="radio-group">
+                <label class="option-label"><input type="radio" name="workshopSpeaker" value="Yes"> Yes</label>
+                <label class="option-label"><input type="radio" name="workshopSpeaker" value="No"> No</label>
+                <label class="option-label"><input type="radio" name="workshopSpeaker" value="Maybe"> Maybe</label>
+            </div>
+        </div>
+
+        <div class="consent-box" style="margin-top: 2rem;">
             <p><strong>Data Protection & Consent / Datenschutz & Einwilligung:</strong></p>
-            <p style="margin-top: 0.5rem;"><strong>EN:</strong> The Ghana Council NRW Professionals Club collects this information to organize membership, match mentors and mentees, and communicate about workshops, forums, and webinars. Data is stored securely, used only for these purposes, and not shared with third parties without your explicit permission.</p>
+            <p style="margin-top: 0.5rem;"><strong>EN:</strong> The Ghana Council NRW Professionals Club collects this information to organize membership, match mentors and mentees, and communicate about workshops, forums, and webinars. Data is stored securely, used only for these purposes, and not shared with third parties without your explicit permission. Contact <a href="mailto:info@ghanacouncil-nrw.de">info@ghanacouncil-nrw.de</a> to access, correct, or delete your data.</p>
+            <p style="margin-top: 0.5rem;"><strong>DE:</strong> Der Ghana Council NRW Professionals Club erhebt diese Daten, um die Mitgliedschaft zu organisieren, Mentor:innen und Mentees zusammenzuführen und über Workshops, Foren und Webinare zu informieren. Ihre Daten werden sicher gespeichert, ausschließlich für diese Zwecke verwendet und nicht ohne Ihre ausdrückliche Zustimmung an Dritte weitergegeben. Für Auskunft, Berichtigung oder Löschung wenden Sie sich bitte an <a href="mailto:info@ghanacouncil-nrw.de">info@ghanacouncil-nrw.de</a>.</p>
         </div>
 
         <div class="form-group" style="margin-top: 1rem;">
             <div class="checkbox-group">
                 <label class="option-label">
-                    <input type="checkbox" id="gdprConsentPage2">
-                    <span>I consent to the Club storing and processing my personal data as described above. / Ich stimme der Speicherung und Verarbeitung zu. <span class="required">*</span></span>
+                    <input type="checkbox" id="gdprConsentP2">
+                    <span>I consent to the Club storing and processing my personal data as described above. / Ich stimme zu, dass der Club meine personenbezogenen Daten wie oben beschrieben speichert und verarbeitet. <span class="required">*</span></span>
                 </label>
                 <label class="option-label">
-                    <input type="checkbox" id="termsConsentPage2">
-                    <span>I have read and agree to the Club's membership terms and code of conduct. / Ich stimme den Mitgliedsbedingungen zu. <span class="required">*</span></span>
+                    <input type="checkbox" id="termsConsentP2">
+                    <span>I have read and agree to the Club's membership terms and code of conduct. / Ich habe die Mitgliedsbedingungen und den Verhaltenskodex gelesen und stimme ihnen zu. <span class="required">*</span></span>
                 </label>
             </div>
         </div>
 
-        <div class="form-group">
-            <label for="profession">Profession (Standalone line)</label>
-            <input type="text" id="profession" placeholder="e.g. Engineer / Educator">
-        </div>
-
-        <div class="form-group">
-            <label for="comments">Comments / Suggestions</label>
-            <textarea id="comments" placeholder="Any additional notes or questions..."></textarea>
-        </div>
-
         <div class="button-group">
             <button type="button" class="btn btn-secondary" onclick="prevStep()">&larr; Back: Page 1</button>
-            <button type="submit" id="submitStep2Btn" class="btn btn-primary">Submit Application</button>
+            <button type="submit" id="submitMentorBtn" class="btn btn-primary">Submit Application</button>
         </div>
     </div>
 </form>
@@ -334,7 +368,54 @@
 
 {% block scripts %}
 <script>
-    // Handles "Other" text input toggle for Languages
+    // Profile Photo Upload & Compression Handler
+    document.getElementById('photoInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                // Resize image to max 200x200 canvas
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const maxSize = 200;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxSize) {
+                        height *= maxSize / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width *= maxSize / height;
+                        height = maxSize;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Convert canvas to compressed Base64 JPEG String
+                const base64String = canvas.toDataURL('image/jpeg', 0.8);
+                document.getElementById('profilePhotoBase64').value = base64String;
+
+                // Display preview
+                const photoPreview = document.getElementById('photoPreview');
+                photoPreview.src = base64String;
+                photoPreview.style.display = 'block';
+                document.getElementById('photoPlaceholder').style.display = 'none';
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Toggle "Other" text field for Languages Spoken
     document.getElementById('langOtherCheck').addEventListener('change', function(e) {
         const textInput = document.getElementById('langOtherText');
         if (e.target.checked) {
@@ -345,42 +426,57 @@
         }
     });
 
-    // Dynamic routing depending on Membership Category selection
+    // Routing Logic based on Category Selection
     document.getElementById('membershipCategory').addEventListener('change', function() {
         const category = this.value;
         const nextPageBtn = document.getElementById('nextPageBtn');
         const submitDirectBtn = document.getElementById('submitDirectBtn');
-        const inlineMemberConsent = document.getElementById('inlineMemberConsent');
+        const consentBlockP1 = document.getElementById('consentBlockP1');
+        const blockMenteeP1 = document.getElementById('blockMenteeP1');
+        const blockMemberP1 = document.getElementById('blockMemberP1');
         const stepIndicator = document.getElementById('stepIndicator');
 
-        // Reset consent checkboxes
-        document.getElementById('gdprConsentMember').required = false;
-        document.getElementById('termsConsentMember').required = false;
-        document.getElementById('gdprConsentPage2').required = false;
-        document.getElementById('termsConsentPage2').required = false;
+        // Hide all conditional blocks on Page 1
+        blockMenteeP1.classList.add('hidden');
+        blockMemberP1.classList.add('hidden');
 
-        if (category === 'Member') {
-            nextPageBtn.classList.add('hidden');
-            submitDirectBtn.classList.remove('hidden');
-            inlineMemberConsent.classList.remove('hidden');
-            stepIndicator.classList.add('hidden');
+        // Reset required state on consents
+        document.getElementById('gdprConsentP1').required = false;
+        document.getElementById('termsConsentP1').required = false;
+        document.getElementById('gdprConsentP2').required = false;
+        document.getElementById('termsConsentP2').required = false;
 
-            document.getElementById('gdprConsentMember').required = true;
-            document.getElementById('termsConsentMember').required = true;
-        } else {
+        if (category === 'Mentor') {
+            // Mentor proceeds to Page 2
             nextPageBtn.classList.remove('hidden');
             submitDirectBtn.classList.add('hidden');
-            inlineMemberConsent.classList.add('hidden');
+            consentBlockP1.classList.add('hidden');
             stepIndicator.classList.remove('hidden');
+            document.getElementById('gdprConsentP2').required = true;
+            document.getElementById('termsConsentP2').required = true;
+        } else if (category === 'Mentee' || category === 'Member') {
+            // Member & Mentee submit directly on Page 1
+            nextPageBtn.classList.add('hidden');
+            submitDirectBtn.classList.remove('hidden');
+            consentBlockP1.classList.remove('hidden');
+            stepIndicator.classList.add('hidden');
 
-            if (category === 'Mentor' || category === 'Mentee') {
-                document.getElementById('gdprConsentPage2').required = true;
-                document.getElementById('termsConsentPage2').required = true;
+            document.getElementById('gdprConsentP1').required = true;
+            document.getElementById('termsConsentP1').required = true;
+
+            if (category === 'Mentee') {
+                blockMenteeP1.classList.remove('hidden');
+            } else if (category === 'Member') {
+                blockMemberP1.classList.remove('hidden');
             }
+        } else {
+            nextPageBtn.classList.add('hidden');
+            submitDirectBtn.classList.add('hidden');
+            consentBlockP1.classList.add('hidden');
+            stepIndicator.classList.add('hidden');
         }
     });
 
-    // Navigates to Page 2 for Mentor / Mentee
     function nextStep() {
         const step1 = document.getElementById('step-1');
         const requiredInputs = step1.querySelectorAll('input[required], select[required]');
@@ -395,15 +491,6 @@
 
         if (!isValid) return;
 
-        const category = document.getElementById('membershipCategory').value;
-        document.querySelectorAll('.category-block').forEach(b => b.classList.add('hidden'));
-
-        if (category === 'Mentor') {
-            document.getElementById('blockMentor').classList.remove('hidden');
-        } else if (category === 'Mentee') {
-            document.getElementById('blockMentee').classList.remove('hidden');
-        }
-
         document.getElementById('step-1').classList.remove('active');
         document.getElementById('step-2').classList.add('active');
         document.getElementById('pill-1').classList.remove('active');
@@ -412,7 +499,6 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Navigates back to Page 1
     function prevStep() {
         document.getElementById('step-2').classList.remove('active');
         document.getElementById('step-1').classList.add('active');
@@ -431,7 +517,7 @@
         return selected ? selected.value : null;
     }
 
-    // Form Submission Handler (Handles both 1-page & 2-page submissions)
+    // Submit Handler
     document.getElementById('membershipForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -447,9 +533,10 @@
         }
 
         const category = document.getElementById('membershipCategory').value;
-        const isMember = category === 'Member';
+        const isMentor = category === 'Mentor';
 
         const payload = {
+            profile_photo: document.getElementById('profilePhotoBase64').value || null,
             full_name: document.getElementById('fullName').value.trim(),
             email: document.getElementById('email').value.trim(),
             dob_month_year: document.getElementById('dobMonthYear').value || null,
@@ -461,35 +548,36 @@
             preferred_contact_method: getRadioValue('preferredContact'),
             city_region_germany: document.getElementById('cityRegion').value.trim() || null,
             languages_spoken: languages,
-            job_title: document.getElementById('jobTitle').value.trim() || null,
-            industry_sector: document.getElementById('industrySector').value || null,
-            years_experience: getRadioValue('yearsExperience'),
-            qualification_field: document.getElementById('qualificationField').value.trim() || null,
-            key_skills: getCheckedValues('skills'),
-            linkedin_profile: document.getElementById('linkedinProfile').value.trim() || null,
+            hear_about_club: document.getElementById('hearAboutClub').value || null,
+            profession: document.getElementById('profession').value.trim() || null,
+            comments: document.getElementById('comments').value.trim() || null,
             membership_category: category,
-            
-            // Mentor / Mentee specific attributes
-            mentor_areas: isMember ? [] : getCheckedValues('mentorAreas'),
-            mentoring_format: isMember ? null : getRadioValue('mentoringFormat'),
-            max_mentees: isMember ? null : getRadioValue('maxMentees'),
-            mentor_availability: isMember ? [] : getCheckedValues('mentorAvailability'),
-            workshop_speaker: isMember ? null : getRadioValue('workshopSpeaker'),
-            mentee_seeking: isMember ? [] : getCheckedValues('menteeSeeking'),
-            mentee_goals: isMember ? null : (document.getElementById('menteeGoals').value.trim() || null),
-            mentor_preferred_background: isMember ? null : (document.getElementById('mentorPreferredBackground').value.trim() || null),
 
-            // Member specific attributes
-            workshop_topics: isMember ? getCheckedValues('workshopTopicsMember') : [],
-            help_organize_events: isMember ? getRadioValue('helpOrganizeMember') : null,
+            // Mentee attributes
+            mentee_seeking: category === 'Mentee' ? getCheckedValues('menteeSeeking') : [],
+            mentee_goals: category === 'Mentee' ? (document.getElementById('menteeGoals').value.trim() || null) : null,
+            mentor_preferred_background: category === 'Mentee' ? (document.getElementById('mentorPreferredBackground').value.trim() || null) : null,
 
-            // Engagement & Consent
-            event_availability: isMember ? [] : getCheckedValues('eventAvailability'),
-            hear_about_club: isMember ? null : (document.getElementById('hearAboutClub').value || null),
-            gdpr_consent: isMember ? document.getElementById('gdprConsentMember').checked : document.getElementById('gdprConsentPage2').checked,
-            terms_consent: isMember ? document.getElementById('termsConsentMember').checked : document.getElementById('termsConsentPage2').checked,
-            profession: isMember ? null : (document.getElementById('profession').value.trim() || null),
-            comments: isMember ? null : (document.getElementById('comments').value.trim() || null)
+            // Member attributes
+            workshop_topics: category === 'Member' ? getCheckedValues('workshopTopicsMember') : [],
+            help_organize_events: category === 'Member' ? getRadioValue('helpOrganizeMember') : null,
+
+            // Mentor Page 2 attributes
+            job_title: isMentor ? (document.getElementById('jobTitle').value.trim() || null) : null,
+            industry_sector: isMentor ? (document.getElementById('industrySector').value || null) : null,
+            years_experience: isMentor ? getRadioValue('yearsExperience') : null,
+            qualification_field: isMentor ? (document.getElementById('qualificationField').value.trim() || null) : null,
+            key_skills: isMentor ? getCheckedValues('skills') : [],
+            linkedin_profile: isMentor ? (document.getElementById('linkedinProfile').value.trim() || null) : null,
+            mentor_areas: isMentor ? getCheckedValues('mentorAreas') : [],
+            mentoring_format: isMentor ? getRadioValue('mentoringFormat') : null,
+            max_mentees: isMentor ? getRadioValue('maxMentees') : null,
+            mentor_availability: isMentor ? getCheckedValues('mentorAvailability') : [],
+            workshop_speaker: isMentor ? getRadioValue('workshopSpeaker') : null,
+
+            // Consent
+            gdpr_consent: isMentor ? document.getElementById('gdprConsentP2').checked : document.getElementById('gdprConsentP1').checked,
+            terms_consent: isMentor ? document.getElementById('termsConsentP2').checked : document.getElementById('termsConsentP1').checked
         };
 
         try {
@@ -502,7 +590,7 @@
             const result = await response.json();
 
             if (response.ok) {
-                alert(`Registration successful! Your Member ID is: ${result.member_id}`);
+                alert(`Registration submitted successfully! Your Member ID is: ${result.member_id}`);
                 window.location.reload();
             } else {
                 alert(`Submission Error: ${result.message || 'Validation failed'}`);
