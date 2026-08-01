@@ -541,11 +541,12 @@
             residence_germany: document.getElementById('residenceGermany').value.trim() || null,
             phone: document.getElementById('phone').value.trim(),
             preferred_contact_method: getRadioValue('preferredContact'),
-            city_region_germany: document.getElementById('cityRegion').value.trim() || null,
+            residence_germany: document.getElementById('residenceGermany') ? document.getElementById('residenceGermany').value.trim() : null,
+            city_region_germany: null,
             languages_spoken: languages,
-            hear_about_club: document.getElementById('hearAboutClub').value || null,
-            profession: document.getElementById('profession').value.trim() || null,
-            comments: document.getElementById('comments').value.trim() || null,
+            hear_about_club: document.getElementById('hearAboutClub') ? document.getElementById('hearAboutClub').value : null,
+            profession: document.getElementById('profession') ? document.getElementById('profession').value.trim() : null,
+            comments: document.getElementById('comments') ? document.getElementById('comments').value.trim() : null,
             membership_category: category,
 
             // Mentee attributes
