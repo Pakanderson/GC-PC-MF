@@ -119,6 +119,8 @@ def send_confirmation_email(recipient_email, full_name, category):
 # ==========================================
 # 5. Public Routes
 # ==========================================
+
+
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -142,6 +144,23 @@ def register_member():
                 }
             ),
             422,
+        )
+
+    # Prevent duplicate registrations by Email or Phone
+    existing_member = CouncilMember.query.filter(
+        (CouncilMember.email == validated_data.email)
+        | (CouncilMember.phone == validated_data.phone)
+    ).first()
+
+    if existing_member:
+        return (
+            jsonify(
+                {
+                    "status": "error",
+                    "message": "A member with this email or phone number is already registered.",
+                }
+            ),
+            409,
         )
 
     dob_date = None
@@ -189,6 +208,7 @@ def register_member():
         event_availability=validated_data.event_availability,
         gdpr_consent=validated_data.gdpr_consent,
         terms_consent=validated_data.terms_consent,
+        status="Pending",  # Requires Admin Review
     )
 
     try:
@@ -203,7 +223,7 @@ def register_member():
             jsonify(
                 {
                     "status": "success",
-                    "message": "Registration submitted successfully!",
+                    "message": "Registration submitted successfully! Pending admin review.",
                     "member_id": new_member.member_id,
                 }
             ),
@@ -260,6 +280,39 @@ def view_members():
         mentees=mentees,
         assignments=assignments,
     )
+
+
+# --- HTML Form Actions for Admin Dashboard ---
+
+
+@app.route("/admin/members/<int:member_id>/accept", methods=["POST"])
+@requires_admin_auth
+def accept_member_html(member_id):
+    member = CouncilMember.query.get_or_404(member_id)
+    member.status = "Accepted"
+    db.session.commit()
+    return redirect(url_for("view_members"))
+
+
+@app.route("/admin/members/<int:member_id>/reject", methods=["POST"])
+@requires_admin_auth
+def reject_member_html(member_id):
+    member = CouncilMember.query.get_or_404(member_id)
+    member.status = "Rejected"
+    db.session.commit()
+    return redirect(url_for("view_members"))
+
+
+@app.route("/admin/members/<int:member_id>/remove", methods=["POST"])
+@requires_admin_auth
+def delete_member_html(member_id):
+    member = CouncilMember.query.get_or_404(member_id)
+    db.session.delete(member)
+    db.session.commit()
+    return redirect(url_for("view_members"))
+
+
+# --- API Routes for JSON updates ---
 
 
 @app.route("/admin/members/<int:member_id>/status", methods=["POST"])

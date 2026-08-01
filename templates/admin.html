@@ -1,134 +1,263 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Ghana Council Professionals Club</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <style>
+    body { background-color: #f8f9fa; }
+    .navbar-brand { font-weight: bold; }
+    .card { border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+    .badge-pending { background-color: #ffc107; color: #000; }
+    .badge-accepted { background-color: #198754; }
+    .badge-rejected { background-color: #dc3545; }
+  </style>
+</head>
+<body>
 
-{% block title %}Admin Dashboard — Ghana Council NRW Professionals Club{% endblock %}
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container-fluid px-4">
+      <a class="navbar-brand" href="#"><i class="bi bi-shield-lock-fill me-2"></i>Admin Dashboard</a>
+      <span class="navbar-text text-light">
+        Ghana Council Professionals Club
+      </span>
+    </div>
+  </nav>
 
-{% block head %}
-<style>
-    .admin-controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-        flex-wrap: wrap;
-        gap: 1rem;
-    }
+  <div class="container-fluid px-4 mb-5">
 
-    .filter-group {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
+    <div class="card p-3 mb-4">
+      <div class="row align-items-center g-3">
+        <div class="col-md-8">
+          <form method="GET" action="/admin/members" class="row g-2 align-items-center">
+            <div class="col-auto">
+              <label for="category" class="col-form-label fw-bold">Category:</label>
+            </div>
+            <div class="col-auto">
+              <select name="category" id="category" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="">All Categories</option>
+                <option value="General Member" {% if selected_category == 'General Member' %}selected{% endif %}>General Member</option>
+                <option value="Mentor" {% if selected_category == 'Mentor' %}selected{% endif %}>Mentor</option>
+                <option value="Mentee" {% if selected_category == 'Mentee' %}selected{% endif %}>Mentee</option>
+                <option value="Executive / Leadership" {% if selected_category == 'Executive / Leadership' %}selected{% endif %}>Executive / Leadership</option>
+              </select>
+            </div>
 
-    .table-responsive {
-        width: 100%;
-        overflow-x: auto;
-    }
+            <div class="col-auto ms-2">
+              <label for="status" class="col-form-label fw-bold">Status:</label>
+            </div>
+            <div class="col-auto">
+              <select name="status" id="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                <option value="">All Statuses</option>
+                <option value="Pending" {% if selected_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Accepted" {% if selected_status == 'Accepted' %}selected{% endif %}>Accepted</option>
+                <option value="Rejected" {% if selected_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+              </select>
+            </div>
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 0.875rem;
-        margin-top: 1rem;
-    }
+            <div class="col-auto ms-2">
+              <a href="/admin/members" class="btn btn-sm btn-outline-secondary">Reset Filters</a>
+            </div>
+          </form>
+        </div>
 
-    th, td {
-        padding: 0.75rem;
-        text-align: left;
-        border-bottom: 1px solid var(--border);
-    }
-
-    th {
-        background-color: #F9FAFB;
-        color: var(--primary);
-        font-weight: 600;
-    }
-
-    tr:hover {
-        background-color: #F3F4F6;
-    }
-
-    .badge {
-        display: inline-block;
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-
-    .badge-mentor { background: #D1FAE5; color: #065F46; }
-    .badge-mentee { background: #DBEAFE; color: #1E40AF; }
-    .badge-member { background: #FEF3C7; color: #92400E; }
-</style>
-{% endblock %}
-
-{% block content %}
-<h2>Registered Club Members</h2>
-
-<div class="admin-controls">
-    <div class="filter-group">
-        <label for="categoryFilter" style="margin-bottom: 0;">Filter Category:</label>
-        <select id="categoryFilter" onchange="applyFilter()" style="width: auto; padding: 0.4rem 0.8rem;">
-            <option value="">All Categories</option>
-            <option value="Mentor" {% if selected_category == 'Mentor' %}selected{% endif %}>Mentor</option>
-            <option value="Mentee" {% if selected_category == 'Mentee' %}selected{% endif %}>Mentee</option>
-            <option value="Member" {% if selected_category == 'Member' %}selected{% endif %}>Member</option>
-        </select>
+        <div class="col-md-4 text-md-end">
+          <a href="/admin/members/export{% if selected_category %}?category={{ selected_category }}{% endif %}" class="btn btn-sm btn-success">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i> Export to CSV
+          </a>
+        </div>
+      </div>
     </div>
 
-    <a href="/admin/members/export{% if selected_category %}?category={{ selected_category }}{% endif %}" class="btn btn-primary" style="text-decoration: none; padding: 0.5rem 1rem; font-size: 0.85rem;">
-        &darr; Export CSV
-    </a>
-</div>
-
-<div class="table-responsive">
-    <table>
-        <thead>
-            <tr>
+    <div class="card mb-5">
+      <div class="card-header bg-white py-3">
+        <h5 class="card-title mb-0 fw-bold"><i class="bi bi-people-fill me-2"></i>Member Registrations</h5>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
                 <th>Member ID</th>
                 <th>Full Name</th>
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Category</th>
-                <th>Job Title / Sector</th>
-                <th>Submitted</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for m in members %}
-            <tr>
-                <td><strong>{{ m.member_id or '—' }}</strong></td>
-                <td>{{ m.full_name }}</td>
-                <td>{{ m.email }}</td>
-                <td>{{ m.phone }}</td>
-                <td>
-                    <span class="badge badge-{{ m.membership_category | lower }}">
-                        {{ m.membership_category }}
-                    </span>
-                </td>
-                <td>{{ m.job_title or '—' }} {% if m.industry_sector %}({{ m.industry_sector }}){% endif %}</td>
-                <td>{{ m.submitted_at.strftime('%Y-%m-%d') if m.submitted_at else '—' }}</td>
-            </tr>
-            {% else %}
-            <tr>
-                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">
-                    No member registrations found.
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-{% endblock %}
+                <th>Status</th>
+                <th>City / Region</th>
+                <th class="text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if members %}
+                {% for member in members %}
+                <tr>
+                  <td class="fw-bold">{{ member.member_id or 'N/A' }}</td>
+                  <td>{{ member.full_name }}</td>
+                  <td><a href="mailto:{{ member.email }}">{{ member.email }}</a></td>
+                  <td>{{ member.phone }}</td>
+                  <td><span class="badge bg-info text-dark">{{ member.membership_category }}</span></td>
+                  <td>
+                    {% if member.status == 'Accepted' %}
+                      <span class="badge badge-accepted">Accepted</span>
+                    {% elif member.status == 'Rejected' %}
+                      <span class="badge badge-rejected">Rejected</span>
+                    {% else %}
+                      <span class="badge badge-pending">Pending</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ member.city_region_germany or '-' }}</td>
+                  <td class="text-center">
+                    <div class="d-inline-flex gap-1">
+                      <form action="/admin/members/{{ member.id }}/accept" method="POST">
+                        <button type="submit" class="btn btn-sm btn-outline-success" title="Admit Member">
+                          <i class="bi bi-check-lg"></i> Admit
+                        </button>
+                      </form>
 
-{% block scripts %}
-<script>
-    function applyFilter() {
-        const cat = document.getElementById('categoryFilter').value;
-        if (cat) {
-            window.location.href = `/admin/members?category=${cat}`;
-        } else {
-            window.location.href = '/admin/members';
-        }
+                      <form action="/admin/members/{{ member.id }}/reject" method="POST">
+                        <button type="submit" class="btn btn-sm btn-outline-warning" title="Reject Member">
+                          <i class="bi bi-x-lg"></i> Reject
+                        </button>
+                      </form>
+
+                      <form action="/admin/members/{{ member.id }}/remove" method="POST" onsubmit="return confirm('Are you sure you want to permanently delete {{ member.full_name }}?');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Member">
+                          <i class="bi bi-trash"></i> Delete
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="8" class="text-center py-4 text-muted">No members found matching the criteria.</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-5">
+        <div class="card h-100">
+          <div class="card-header bg-white py-3">
+            <h5 class="card-title mb-0 fw-bold"><i class="bi bi-person-plus-fill me-2"></i>Assign Mentorship</h5>
+          </div>
+          <div class="card-body">
+            <form id="mentorshipForm">
+              <div class="mb-3">
+                <label for="mentor_id" class="form-label fw-bold">Select Mentor (Accepted Only)</label>
+                <select id="mentor_id" name="mentor_id" class="form-select" required>
+                  <option value="">-- Choose Mentor --</option>
+                  {% for mentor in mentors %}
+                    <option value="{{ mentor.id }}">{{ mentor.full_name }} ({{ mentor.profession or 'Mentor' }})</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label for="mentee_id" class="form-label fw-bold">Select Mentee (Accepted Only)</label>
+                <select id="mentee_id" name="mentee_id" class="form-select" required>
+                  <option value="">-- Choose Mentee --</option>
+                  {% for mentee in mentees %}
+                    <option value="{{ mentee.id }}">{{ mentee.full_name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label for="focus_area" class="form-label fw-bold">Focus Area / Topic</label>
+                <input type="text" id="focus_area" name="focus_area" class="form-control" placeholder="e.g. Career Growth, IT, Job Search">
+              </div>
+
+              <div class="mb-3">
+                <label for="end_date" class="form-label fw-bold">Target End Date</label>
+                <input type="date" id="end_date" name="end_date" class="form-control">
+              </div>
+
+              <button type="button" onclick="submitMentorshipAssignment()" class="btn btn-primary w-100">
+                Create Mentorship Pairing
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-7">
+        <div class="card h-100">
+          <div class="card-header bg-white py-3">
+            <h5 class="card-title mb-0 fw-bold"><i class="bi bi-diagram-3-fill me-2"></i>Active Mentorship Pairings</h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-striped align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Mentor</th>
+                    <th>Mentee</th>
+                    <th>Focus Area</th>
+                    <th>End Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if assignments %}
+                    {% for assign in assignments %}
+                    <tr>
+                      <td>{{ assign.mentor.full_name if assign.mentor else 'N/A' }}</td>
+                      <td>{{ assign.mentee.full_name if assign.mentee else 'N/A' }}</td>
+                      <td>{{ assign.focus_area or '-' }}</td>
+                      <td>{{ assign.end_date or 'Ongoing' }}</td>
+                    </tr>
+                    {% endfor %}
+                  {% else %}
+                    <tr>
+                      <td colspan="4" class="text-center py-4 text-muted">No active mentorship assignments.</td>
+                    </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    async function submitMentorshipAssignment() {
+      const mentor_id = document.getElementById('mentor_id').value;
+      const mentee_id = document.getElementById('mentee_id').value;
+      const focus_area = document.getElementById('focus_area').value;
+      const end_date = document.getElementById('end_date').value;
+
+      if (!mentor_id || !mentee_id) {
+        alert("Please select both a Mentor and a Mentee.");
+        return;
+      }
+
+      const response = await fetch('/admin/assign-mentorship', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mentor_id, mentee_id, focus_area, end_date })
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert(result.message);
+        window.location.reload();
+      } else {
+        alert("Error: " + result.message);
+      }
     }
-</script>
-{% endblock %}
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
