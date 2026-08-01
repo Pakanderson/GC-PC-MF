@@ -2,4 +2,4 @@ USE ghanacouncil_db;
 
 SELECT * FROM council_members;
 
-DROP DATABASE IF EXISTS gc_professionals_club_db;
+DROP TABLE IF EXISTS club_members CASCADE;
