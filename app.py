@@ -13,6 +13,8 @@ from schemas import MemberRegistrationSchema
 # Initialize Flask App
 app = Flask(__name__)
 CORS(app)  # Enable Cross-Origin Resource Sharing
+# ==========================================
+
 
 # ==========================================
 # 1. Database Configuration
@@ -20,13 +22,12 @@ CORS(app)  # Enable Cross-Origin Resource Sharing
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if DATABASE_URL:
-    # Render or external cloud DB connection string
-    # Fix postgres/mysql prefix if needed
-    if DATABASE_URL.startswith("mysql://"):
-        DATABASE_URL = DATABASE_URL.replace("mysql://", "mysql+pymysql://", 1)
+    # Fix Render's legacy 'postgres://' prefix if present
+    if DATABASE_URL.startswith("postgres://"):
+        DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
     app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 else:
-    # Local fallback
+    # Local fallback for MySQL
     DB_USER = os.getenv("DB_USER", "root")
     DB_PASS = os.getenv("DB_PASS", "your_mysql_password")
     DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
