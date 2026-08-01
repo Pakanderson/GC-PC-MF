@@ -63,7 +63,9 @@ mail = Mail(app)
 
 # Initialize Tables Contextually
 with app.app_context():
-    db.create_all()
+    db.drop_all()  #
+    db.create_all()  #
+
 
 # ==========================================
 # 3. Helper Functions & Email Dispatch
@@ -111,9 +113,11 @@ www.ghanacouncil-nrw.de
         print(f"[Email Error] Failed to send email to {recipient_email}: {str(e)}")
         return False
 
+
 # ==========================================
 # 4. Web & API Routes
 # ==========================================
+
 
 @app.route("/")
 def home():
@@ -147,9 +151,19 @@ def register_member():
     dob_date = None
     if validated_data.dob_month_year:
         try:
-            dob_date = datetime.strptime(f"{validated_data.dob_month_year}-01", "%Y-%m-%d").date()
+            dob_date = datetime.strptime(
+                f"{validated_data.dob_month_year}-01", "%Y-%m-%d"
+            ).date()
         except ValueError:
-            return jsonify({"status": "error", "message": "Invalid date format for Date of Birth. Use YYYY-MM."}), 400
+            return (
+                jsonify(
+                    {
+                        "status": "error",
+                        "message": "Invalid date format for Date of Birth. Use YYYY-MM.",
+                    }
+                ),
+                400,
+            )
 
     # Map payload to database model
     new_member = CouncilMember(
@@ -165,7 +179,6 @@ def register_member():
         preferred_contact_method=validated_data.preferred_contact_method,
         city_region_germany=validated_data.city_region_germany,
         languages_spoken=validated_data.languages_spoken,
-        
         # Professional Background
         job_title=validated_data.job_title,
         industry_sector=validated_data.industry_sector,
@@ -174,30 +187,26 @@ def register_member():
         key_skills=validated_data.key_skills,
         linkedin_profile=validated_data.linkedin_profile,
         membership_category=validated_data.membership_category,
-
         # Category Specifics (Mentor)
         mentor_areas=validated_data.mentor_areas,
         mentoring_format=validated_data.mentoring_format,
         max_mentees=validated_data.max_mentees,
         mentor_availability=validated_data.mentor_availability,
         workshop_speaker=validated_data.workshop_speaker,
-
         # Category Specifics (Mentee)
         mentee_seeking=validated_data.mentee_seeking,
         mentee_goals=validated_data.mentee_goals,
         mentor_preferred_background=validated_data.mentor_preferred_background,
-
         # Category Specifics (Member)
         workshop_topics=validated_data.workshop_topics,
         help_organize_events=validated_data.help_organize_events,
-
         # Engagement, Consent & General Comments
         event_availability=validated_data.event_availability,
         hear_about_club=validated_data.hear_about_club,
         gdpr_consent=validated_data.gdpr_consent,
         terms_consent=validated_data.terms_consent,
         profession=validated_data.profession,
-        comments=validated_data.comments
+        comments=validated_data.comments,
     )
 
     try:
@@ -267,28 +276,40 @@ def export_members_csv():
 
     si = io.StringIO()
     writer = csv.writer(si)
-    writer.writerow([
-        "Member ID", "Full Name", "Email", "Phone", "Category",
-        "Job Title", "Industry", "City", "Submitted At"
-    ])
+    writer.writerow(
+        [
+            "Member ID",
+            "Full Name",
+            "Email",
+            "Phone",
+            "Category",
+            "Job Title",
+            "Industry",
+            "City",
+            "Submitted At",
+        ]
+    )
 
     for m in members:
-        writer.writerow([
-            m.member_id,
-            m.full_name,
-            m.email,
-            m.phone,
-            m.membership_category,
-            m.job_title,
-            m.industry_sector,
-            m.city_region_germany,
-            m.submitted_at.strftime("%Y-%m-%d %H:%M:%S") if m.submitted_at else ""
-        ])
+        writer.writerow(
+            [
+                m.member_id,
+                m.full_name,
+                m.email,
+                m.phone,
+                m.membership_category,
+                m.job_title,
+                m.industry_sector,
+                m.city_region_germany,
+                m.submitted_at.strftime("%Y-%m-%d %H:%M:%S") if m.submitted_at else "",
+            ]
+        )
 
     output = make_response(si.getvalue())
     output.headers["Content-Disposition"] = "attachment; filename=club_members.csv"
     output.headers["Content-type"] = "text/csv"
     return output
+
 
 # ==========================================
 # 5. Application Entry Point
