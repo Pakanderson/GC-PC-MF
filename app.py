@@ -17,15 +17,26 @@ CORS(app)  # Enable Cross-Origin Resource Sharing
 # ==========================================
 # 1. Database Configuration
 # ==========================================
-DB_USER = os.getenv("DB_USER", "root")
-DB_PASS = os.getenv("DB_PASS", "your_mysql_password")  # Configure in .env
-DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
-DB_PORT = os.getenv("DB_PORT", "3306")
-DB_NAME = os.getenv("DB_NAME", "gc_professionals_club_db")
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-app.config["SQLALCHEMY_DATABASE_URI"] = (
-    f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-)
+if DATABASE_URL:
+    # Render or external cloud DB connection string
+    # Fix postgres/mysql prefix if needed
+    if DATABASE_URL.startswith("mysql://"):
+        DATABASE_URL = DATABASE_URL.replace("mysql://", "mysql+pymysql://", 1)
+    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+else:
+    # Local fallback
+    DB_USER = os.getenv("DB_USER", "root")
+    DB_PASS = os.getenv("DB_PASS", "your_mysql_password")
+    DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
+    DB_PORT = os.getenv("DB_PORT", "3306")
+    DB_NAME = os.getenv("DB_NAME", "gc_professionals_club_db")
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = (
+        f"mysql+pymysql://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    )
+
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # ==========================================
