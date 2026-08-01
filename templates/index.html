@@ -4,13 +4,13 @@
 
 {% block content %}
 <form id="membershipForm">
-    <div class="step-indicator">
+    <div class="step-indicator" id="stepIndicator">
         <div class="step-pill active" id="pill-1"></div>
         <div class="step-pill" id="pill-2"></div>
     </div>
 
     <div class="form-step active" id="step-1">
-        <h2>Page 1: Personal & Professional Details</h2>
+        <h2>Personal & Professional Background</h2>
 
         <div class="form-group">
             <label for="fullName">1. Full Name <span class="required">*</span></label>
@@ -139,26 +139,66 @@
 
         <div class="form-group">
             <label for="membershipCategory">13. Membership Category <span class="required">*</span></label>
-            <p class="field-desc">This determines which specific section on Page 2 you should complete.</p>
+            <p class="field-desc">Selecting 'Member' completes your application on this page. Selecting 'Mentor' or 'Mentee' proceeds to Page 2 for matching questions.</p>
             <select id="membershipCategory" required>
                 <option value="">-- Select Category --</option>
+                <option value="Member">Member</option>
                 <option value="Mentor">Mentor</option>
                 <option value="Mentee">Mentee</option>
-                <option value="Member">Member</option>
             </select>
         </div>
 
+        <div id="inlineMemberConsent" class="hidden" style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+            <div class="form-group">
+                <label>Topics you'd like to see in workshops/webinars</label>
+                <div class="checkbox-group">
+                    <label class="option-label"><input type="checkbox" name="workshopTopicsMember" value="Career growth"> Career growth</label>
+                    <label class="option-label"><input type="checkbox" name="workshopTopicsMember" value="Financial literacy"> Financial literacy</label>
+                    <label class="option-label"><input type="checkbox" name="workshopTopicsMember" value="Entrepreneurship"> Entrepreneurship</label>
+                    <label class="option-label"><input type="checkbox" name="workshopTopicsMember" value="Tech trends"> Tech trends</label>
+                    <label class="option-label"><input type="checkbox" name="workshopTopicsMember" value="Integration & Law"> Integration & Law in Germany</label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Willing to help organize events?</label>
+                <div class="radio-group">
+                    <label class="option-label"><input type="radio" name="helpOrganizeMember" value="Yes"> Yes</label>
+                    <label class="option-label"><input type="radio" name="helpOrganizeMember" value="No"> No</label>
+                    <label class="option-label"><input type="radio" name="helpOrganizeMember" value="Maybe"> Maybe</label>
+                </div>
+            </div>
+
+            <div class="consent-box">
+                <p><strong>Data Protection & Consent / Datenschutz & Einwilligung:</strong></p>
+                <p style="margin-top: 0.5rem;"><strong>EN:</strong> The Ghana Council NRW Professionals Club collects this information to organize membership and communicate about workshops, forums, and webinars. Data is stored securely and not shared without permission.</p>
+            </div>
+
+            <div class="form-group" style="margin-top: 1rem;">
+                <div class="checkbox-group">
+                    <label class="option-label">
+                        <input type="checkbox" id="gdprConsentMember">
+                        <span>I consent to data processing / Ich stimme zu <span class="required">*</span></span>
+                    </label>
+                    <label class="option-label">
+                        <input type="checkbox" id="termsConsentMember">
+                        <span>I agree to terms / Ich stimme den Bedingungen zu <span class="required">*</span></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
         <div class="button-group">
-            <button type="button" class="btn btn-primary" onclick="nextStep()">Next: Page 2 &rarr;</button>
+            <button type="button" id="nextPageBtn" class="btn btn-primary" onclick="nextStep()">Next: Page 2 &rarr;</button>
+            <button type="submit" id="submitDirectBtn" class="btn btn-primary hidden">Submit Application</button>
         </div>
     </div>
 
     <div class="form-step" id="step-2">
-        <h2>Page 2: Category Specifics & Engagement</h2>
-        <p class="field-desc" style="margin-bottom: 1.5rem;">Complete the block below corresponding to your selected membership category.</p>
+        <h2>Category Specific Questions</h2>
 
         <div id="blockMentor" class="category-block hidden">
-            <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">Mentor Block</h3>
+            <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">Mentor Questions</h3>
             
             <div class="form-group">
                 <label>14. Areas You're Willing to Mentor In</label>
@@ -209,7 +249,7 @@
         </div>
 
         <div id="blockMentee" class="category-block hidden">
-            <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">Mentee Block</h3>
+            <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">Mentee Questions</h3>
 
             <div class="form-group">
                 <label>19. What are you seeking from mentorship?</label>
@@ -230,30 +270,6 @@
             <div class="form-group">
                 <label for="mentorPreferredBackground">21. Preferred mentor background/expertise</label>
                 <input type="text" id="mentorPreferredBackground" placeholder="e.g. Senior Manager in IT Sector">
-            </div>
-        </div>
-
-        <div id="blockMember" class="category-block hidden">
-            <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem;">General Member Block</h3>
-
-            <div class="form-group">
-                <label>22. Topics you'd like to see in workshops/webinars</label>
-                <div class="checkbox-group">
-                    <label class="option-label"><input type="checkbox" name="workshopTopics" value="Career growth"> Career growth</label>
-                    <label class="option-label"><input type="checkbox" name="workshopTopics" value="Financial literacy"> Financial literacy</label>
-                    <label class="option-label"><input type="checkbox" name="workshopTopics" value="Entrepreneurship"> Entrepreneurship</label>
-                    <label class="option-label"><input type="checkbox" name="workshopTopics" value="Tech trends"> Tech trends</label>
-                    <label class="option-label"><input type="checkbox" name="workshopTopics" value="Integration & Law"> Integration & Law in Germany</label>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>23. Willing to help organize events?</label>
-                <div class="radio-group">
-                    <label class="option-label"><input type="radio" name="helpOrganizeEvents" value="Yes"> Yes</label>
-                    <label class="option-label"><input type="radio" name="helpOrganizeEvents" value="No"> No</label>
-                    <label class="option-label"><input type="radio" name="helpOrganizeEvents" value="Maybe"> Maybe</label>
-                </div>
             </div>
         </div>
 
@@ -283,17 +299,16 @@
         <div class="consent-box">
             <p><strong>Data Protection & Consent / Datenschutz & Einwilligung:</strong></p>
             <p style="margin-top: 0.5rem;"><strong>EN:</strong> The Ghana Council NRW Professionals Club collects this information to organize membership, match mentors and mentees, and communicate about workshops, forums, and webinars. Data is stored securely, used only for these purposes, and not shared with third parties without your explicit permission.</p>
-            <p style="margin-top: 0.5rem;"><strong>DE:</strong> Der Ghana Council NRW Professionals Club erhebt diese Daten, um die Mitgliedschaft zu organisieren, Mentor:innen und Mentees zusammenzuführen und über Workshops, Foren und Webinare zu informieren. Ihre Daten werden sicher gespeichert und nicht ohne Ihre Zustimmung weitergegeben.</p>
         </div>
 
         <div class="form-group" style="margin-top: 1rem;">
             <div class="checkbox-group">
                 <label class="option-label">
-                    <input type="checkbox" id="gdprConsent" required>
+                    <input type="checkbox" id="gdprConsentPage2">
                     <span>I consent to the Club storing and processing my personal data as described above. / Ich stimme der Speicherung und Verarbeitung zu. <span class="required">*</span></span>
                 </label>
                 <label class="option-label">
-                    <input type="checkbox" id="termsConsent" required>
+                    <input type="checkbox" id="termsConsentPage2">
                     <span>I have read and agree to the Club's membership terms and code of conduct. / Ich stimme den Mitgliedsbedingungen zu. <span class="required">*</span></span>
                 </label>
             </div>
@@ -311,7 +326,7 @@
 
         <div class="button-group">
             <button type="button" class="btn btn-secondary" onclick="prevStep()">&larr; Back: Page 1</button>
-            <button type="submit" id="submitBtn" class="btn btn-primary">Submit Application</button>
+            <button type="submit" id="submitStep2Btn" class="btn btn-primary">Submit Application</button>
         </div>
     </div>
 </form>
@@ -330,23 +345,42 @@
         }
     });
 
-    // Dynamically shows matching block on Page 2 based on Category selected
-    function updateCategoryBlocks() {
-        const category = document.getElementById('membershipCategory').value;
-        document.querySelectorAll('.category-block').forEach(b => b.classList.add('hidden'));
+    // Dynamic routing depending on Membership Category selection
+    document.getElementById('membershipCategory').addEventListener('change', function() {
+        const category = this.value;
+        const nextPageBtn = document.getElementById('nextPageBtn');
+        const submitDirectBtn = document.getElementById('submitDirectBtn');
+        const inlineMemberConsent = document.getElementById('inlineMemberConsent');
+        const stepIndicator = document.getElementById('stepIndicator');
 
-        if (category === 'Mentor') {
-            document.getElementById('blockMentor').classList.remove('hidden');
-        } else if (category === 'Mentee') {
-            document.getElementById('blockMentee').classList.remove('hidden');
-        } else if (category === 'Member') {
-            document.getElementById('blockMember').classList.remove('hidden');
+        // Reset consent checkboxes
+        document.getElementById('gdprConsentMember').required = false;
+        document.getElementById('termsConsentMember').required = false;
+        document.getElementById('gdprConsentPage2').required = false;
+        document.getElementById('termsConsentPage2').required = false;
+
+        if (category === 'Member') {
+            nextPageBtn.classList.add('hidden');
+            submitDirectBtn.classList.remove('hidden');
+            inlineMemberConsent.classList.remove('hidden');
+            stepIndicator.classList.add('hidden');
+
+            document.getElementById('gdprConsentMember').required = true;
+            document.getElementById('termsConsentMember').required = true;
+        } else {
+            nextPageBtn.classList.remove('hidden');
+            submitDirectBtn.classList.add('hidden');
+            inlineMemberConsent.classList.add('hidden');
+            stepIndicator.classList.remove('hidden');
+
+            if (category === 'Mentor' || category === 'Mentee') {
+                document.getElementById('gdprConsentPage2').required = true;
+                document.getElementById('termsConsentPage2').required = true;
+            }
         }
-    }
+    });
 
-    document.getElementById('membershipCategory').addEventListener('change', updateCategoryBlocks);
-
-    // Step 1 -> Step 2 Navigation
+    // Navigates to Page 2 for Mentor / Mentee
     function nextStep() {
         const step1 = document.getElementById('step-1');
         const requiredInputs = step1.querySelectorAll('input[required], select[required]');
@@ -359,18 +393,26 @@
             }
         });
 
-        if (isValid) {
-            document.getElementById('step-1').classList.remove('active');
-            document.getElementById('step-2').classList.add('active');
-            document.getElementById('pill-1').classList.remove('active');
-            document.getElementById('pill-1').classList.add('completed');
-            document.getElementById('pill-2').classList.add('active');
-            updateCategoryBlocks();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (!isValid) return;
+
+        const category = document.getElementById('membershipCategory').value;
+        document.querySelectorAll('.category-block').forEach(b => b.classList.add('hidden'));
+
+        if (category === 'Mentor') {
+            document.getElementById('blockMentor').classList.remove('hidden');
+        } else if (category === 'Mentee') {
+            document.getElementById('blockMentee').classList.remove('hidden');
         }
+
+        document.getElementById('step-1').classList.remove('active');
+        document.getElementById('step-2').classList.add('active');
+        document.getElementById('pill-1').classList.remove('active');
+        document.getElementById('pill-1').classList.add('completed');
+        document.getElementById('pill-2').classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Step 2 -> Step 1 Navigation
+    // Navigates back to Page 1
     function prevStep() {
         document.getElementById('step-2').classList.remove('active');
         document.getElementById('step-1').classList.add('active');
@@ -380,18 +422,16 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Collect checked values for a group
     function getCheckedValues(name) {
         return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`)).map(cb => cb.value);
     }
 
-    // Get selected radio value
     function getRadioValue(name) {
         const selected = document.querySelector(`input[name="${name}"]:checked`);
         return selected ? selected.value : null;
     }
 
-    // Form Submission Handler
+    // Form Submission Handler (Handles both 1-page & 2-page submissions)
     document.getElementById('membershipForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
@@ -400,14 +440,15 @@
             return;
         }
 
-        // Handle Languages (combine checked items + 'Other' text)
         let languages = getCheckedValues('languages');
         if (document.getElementById('langOtherCheck').checked) {
             const otherVal = document.getElementById('langOtherText').value.trim();
             if (otherVal) languages.push(`Other: ${otherVal}`);
         }
 
-        // Construct JSON Payload
+        const category = document.getElementById('membershipCategory').value;
+        const isMember = category === 'Member';
+
         const payload = {
             full_name: document.getElementById('fullName').value.trim(),
             email: document.getElementById('email').value.trim(),
@@ -426,36 +467,30 @@
             qualification_field: document.getElementById('qualificationField').value.trim() || null,
             key_skills: getCheckedValues('skills'),
             linkedin_profile: document.getElementById('linkedinProfile').value.trim() || null,
-            membership_category: document.getElementById('membershipCategory').value,
+            membership_category: category,
             
-            // Mentor Fields
-            mentor_areas: getCheckedValues('mentorAreas'),
-            mentoring_format: getRadioValue('mentoringFormat'),
-            max_mentees: getRadioValue('maxMentees'),
-            mentor_availability: getCheckedValues('mentorAvailability'),
-            workshop_speaker: getRadioValue('workshopSpeaker'),
+            // Mentor / Mentee specific attributes
+            mentor_areas: isMember ? [] : getCheckedValues('mentorAreas'),
+            mentoring_format: isMember ? null : getRadioValue('mentoringFormat'),
+            max_mentees: isMember ? null : getRadioValue('maxMentees'),
+            mentor_availability: isMember ? [] : getCheckedValues('mentorAvailability'),
+            workshop_speaker: isMember ? null : getRadioValue('workshopSpeaker'),
+            mentee_seeking: isMember ? [] : getCheckedValues('menteeSeeking'),
+            mentee_goals: isMember ? null : (document.getElementById('menteeGoals').value.trim() || null),
+            mentor_preferred_background: isMember ? null : (document.getElementById('mentorPreferredBackground').value.trim() || null),
 
-            // Mentee Fields
-            mentee_seeking: getCheckedValues('menteeSeeking'),
-            mentee_goals: document.getElementById('menteeGoals').value.trim() || null,
-            mentor_preferred_background: document.getElementById('mentorPreferredBackground').value.trim() || null,
-
-            // Member Fields
-            workshop_topics: getCheckedValues('workshopTopics'),
-            help_organize_events: getRadioValue('helpOrganizeEvents'),
+            // Member specific attributes
+            workshop_topics: isMember ? getCheckedValues('workshopTopicsMember') : [],
+            help_organize_events: isMember ? getRadioValue('helpOrganizeMember') : null,
 
             // Engagement & Consent
-            event_availability: getCheckedValues('eventAvailability'),
-            hear_about_club: document.getElementById('hearAboutClub').value || null,
-            gdpr_consent: document.getElementById('gdprConsent').checked,
-            terms_consent: document.getElementById('termsConsent').checked,
-            profession: document.getElementById('profession').value.trim() || null,
-            comments: document.getElementById('comments').value.trim() || null
+            event_availability: isMember ? [] : getCheckedValues('eventAvailability'),
+            hear_about_club: isMember ? null : (document.getElementById('hearAboutClub').value || null),
+            gdpr_consent: isMember ? document.getElementById('gdprConsentMember').checked : document.getElementById('gdprConsentPage2').checked,
+            terms_consent: isMember ? document.getElementById('termsConsentMember').checked : document.getElementById('termsConsentPage2').checked,
+            profession: isMember ? null : (document.getElementById('profession').value.trim() || null),
+            comments: isMember ? null : (document.getElementById('comments').value.trim() || null)
         };
-
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Submitting...';
 
         try {
             const response = await fetch('/api/register', {
@@ -468,18 +503,4 @@
 
             if (response.ok) {
                 alert(`Registration successful! Your Member ID is: ${result.member_id}`);
-                window.location.reload();
-            } else {
-                alert(`Submission Error: ${result.message || 'Validation failed'}`);
-                console.error(result.errors);
-            }
-        } catch (err) {
-            console.error('Network error:', err);
-            alert('Unable to reach backend server. Please check your connection.');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Submit Application';
-        }
-    });
-</script>
-{% endblock %}
+                window.location.reload

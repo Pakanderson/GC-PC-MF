@@ -4,8 +4,8 @@ from pydantic import BaseModel, EmailStr, Field
 
 class MemberRegistrationSchema(BaseModel):
     """
-    Pydantic Schema for validating payload received from the frontend form.
-    Matches all Page 1 and Page 2 fields.
+    Pydantic Schema for validating payload received from frontend.
+    Handles both direct 1-page submissions (Member) and 2-page submissions (Mentor/Mentee).
     """
 
     # Page 1: Personal & Contact Info
@@ -13,7 +13,7 @@ class MemberRegistrationSchema(BaseModel):
     email: EmailStr
     dob_month_year: Optional[str] = Field(
         None, pattern=r"^\d{4}-\d{2}$"
-    )  # e.g., "1995-08"
+    )  # e.g. "1995-08"
     gender: Optional[str] = None
     nationality: Optional[str] = None
     hometown_ghana: Optional[str] = None
@@ -32,19 +32,19 @@ class MemberRegistrationSchema(BaseModel):
     linkedin_profile: Optional[str] = None
     membership_category: str = Field(..., pattern=r"^(Mentor|Mentee|Member)$")
 
-    # Page 2: Mentor Block
+    # Mentor Block (Page 2 - Optional for Member)
     mentor_areas: Optional[List[str]] = Field(default_factory=list)
     mentoring_format: Optional[str] = None
     max_mentees: Optional[str] = None
     mentor_availability: Optional[List[str]] = Field(default_factory=list)
     workshop_speaker: Optional[str] = None
 
-    # Page 2: Mentee Block
+    # Mentee Block (Page 2 - Optional for Member)
     mentee_seeking: Optional[List[str]] = Field(default_factory=list)
     mentee_goals: Optional[str] = None
     mentor_preferred_background: Optional[str] = None
 
-    # Page 2: Member Block
+    # Member Block (Inline Page 1 or Page 2)
     workshop_topics: Optional[List[str]] = Field(default_factory=list)
     help_organize_events: Optional[str] = None
 
@@ -62,31 +62,9 @@ class MemberRegistrationSchema(BaseModel):
                 "full_name": "Kwame Mensah",
                 "email": "kwame.mensah@example.com",
                 "dob_month_year": "1992-05",
-                "gender": "Male",
-                "nationality": "Ghanaian",
-                "hometown_ghana": "Kumasi",
-                "residence_germany": "Düsseldorf",
                 "phone": "+49 176 12345678",
-                "preferred_contact_method": "WhatsApp",
-                "city_region_germany": "Düsseldorf, NRW",
-                "languages_spoken": ["English", "German", "Twi"],
-                "job_title": "Software Engineer",
-                "industry_sector": "IT",
-                "years_experience": "5–10",
-                "qualification_field": "M.Sc. Computer Science",
-                "key_skills": ["Software Engineering", "IT"],
-                "linkedin_profile": "https://linkedin.com/in/kwamemensah",
-                "membership_category": "Mentor",
-                "mentor_areas": ["Career guidance", "Technical mentoring"],
-                "mentoring_format": "1-on-1",
-                "max_mentees": "2–3",
-                "mentor_availability": ["Weekday evenings", "Weekends"],
-                "workshop_speaker": "Yes",
-                "event_availability": ["Weekends"],
-                "hear_about_club": "Social Media",
+                "membership_category": "Member",
                 "gdpr_consent": True,
                 "terms_consent": True,
-                "profession": "IT Professional",
-                "comments": "Excited to join!",
             }
         }
