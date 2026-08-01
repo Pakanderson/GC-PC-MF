@@ -86,7 +86,7 @@
                 <th>Phone</th>
                 <th>Category</th>
                 <th>Status</th>
-                <th>City / Region</th>
+                <th>Place of Residence</th>
                 <th class="text-center">Actions</th>
               </tr>
             </thead>
@@ -108,7 +108,7 @@
                       <span class="badge badge-pending">Pending</span>
                     {% endif %}
                   </td>
-                  <td>{{ member.city_region_germany or '-' }}</td>
+                  <td>{{ member.residence_germany or '-' }}</td>
                   <td class="text-center">
                     <div class="d-inline-flex gap-1">
                       <form action="/admin/members/{{ member.id }}/accept" method="POST">

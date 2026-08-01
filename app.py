@@ -2,6 +2,7 @@ import os
 import io
 import csv
 from functools import wraps
+from typing import Optional
 from datetime import datetime
 from flask import Flask, request, jsonify, render_template, make_response, Response
 from flask import (
@@ -195,7 +196,8 @@ def register_member():
         residence_germany=validated_data.residence_germany,
         phone=validated_data.phone,
         preferred_contact_method=validated_data.preferred_contact_method,
-        city_region_germany=validated_data.city_region_germany,
+        city_region_germany=getattr(validated_data, 'city_region_germany', None),
+        #city_region_germany=validated_data.city_region_germany,
         languages_spoken=validated_data.languages_spoken,
         hear_about_club=validated_data.hear_about_club,
         profession=validated_data.profession,
@@ -435,7 +437,7 @@ def export_members_csv():
             "Phone",
             "Category",
             "Status",
-            "City",
+            "Place of Residence",
             "Submitted At",
         ]
     )
@@ -449,7 +451,7 @@ def export_members_csv():
                 m.phone,
                 m.membership_category,
                 m.status,
-                m.city_region_germany,
+                m.residence_germany,
                 m.submitted_at.strftime("%Y-%m-%d %H:%M:%S") if m.submitted_at else "",
             ]
         )
