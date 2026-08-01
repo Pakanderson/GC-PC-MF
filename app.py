@@ -285,30 +285,47 @@ def view_members():
 # --- HTML Form Actions for Admin Dashboard ---
 
 
+# ==========================================
+# 6. Protected Admin Routes (HTML Form Actions)
+# ==========================================
+
+
 @app.route("/admin/members/<int:member_id>/accept", methods=["POST"])
 @requires_admin_auth
 def accept_member_html(member_id):
-    member = CouncilMember.query.get_or_404(member_id)
-    member.status = "Accepted"
-    db.session.commit()
+    try:
+        member = CouncilMember.query.get_or_404(member_id)
+        member.status = "Accepted"
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error accepting member {member_id}: {e}")
     return redirect(url_for("view_members"))
 
 
 @app.route("/admin/members/<int:member_id>/reject", methods=["POST"])
 @requires_admin_auth
 def reject_member_html(member_id):
-    member = CouncilMember.query.get_or_404(member_id)
-    member.status = "Rejected"
-    db.session.commit()
+    try:
+        member = CouncilMember.query.get_or_404(member_id)
+        member.status = "Rejected"
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error rejecting member {member_id}: {e}")
     return redirect(url_for("view_members"))
 
 
 @app.route("/admin/members/<int:member_id>/remove", methods=["POST"])
 @requires_admin_auth
 def delete_member_html(member_id):
-    member = CouncilMember.query.get_or_404(member_id)
-    db.session.delete(member)
-    db.session.commit()
+    try:
+        member = CouncilMember.query.get_or_404(member_id)
+        db.session.delete(member)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error deleting member {member_id}: {e}")
     return redirect(url_for("view_members"))
 
 
