@@ -503,4 +503,15 @@
 
             if (response.ok) {
                 alert(`Registration successful! Your Member ID is: ${result.member_id}`);
-                window.location.reload
+                window.location.reload();
+            } else {
+                alert(`Submission Error: ${result.message || 'Validation failed'}`);
+                console.error(result.errors);
+            }
+        } catch (err) {
+            console.error('Network error:', err);
+            alert('Unable to reach backend server. Please check your connection.');
+        }
+    });
+</script>
+{% endblock %}
