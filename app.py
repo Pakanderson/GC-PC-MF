@@ -197,7 +197,6 @@ def register_member():
         phone=validated_data.phone,
         preferred_contact_method=validated_data.preferred_contact_method,
         city_region_germany=getattr(validated_data, 'city_region_germany', None),
-        #city_region_germany=validated_data.city_region_germany,
         languages_spoken=validated_data.languages_spoken,
         hear_about_club=validated_data.hear_about_club,
         profession=validated_data.profession,
