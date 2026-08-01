@@ -63,12 +63,17 @@
         </div>
 
         <div class="form-group">
-            <label for="dobMonthYear">3. Date of Birth (Month & Year)</label>
+            <label for="phone">3. Phone / WhatsApp Number <span class="required">*</span></label>
+            <input type="text" id="phone" required placeholder="e.g. +49 123 456789">
+        </div>
+
+        <div class="form-group">
+            <label for="dobMonthYear">4. Date of Birth (Month & Year)</label>
             <input type="month" id="dobMonthYear">
         </div>
 
         <div class="form-group">
-            <label for="gender">4. Gender</label>
+            <label for="gender">5. Gender</label>
             <select id="gender">
                 <option value="">-- Select Gender --</option>
                 <option value="Male">Male</option>
@@ -78,24 +83,19 @@
         </div>
 
         <div class="form-group">
-            <label for="nationality">5. Nationality</label>
+            <label for="nationality">6. Nationality</label>
             <input type="text" id="nationality" placeholder="e.g. Ghanaian / German">
         </div>
 
         <div class="form-group">
-            <label for="hometownGhana">6. Hometown (Ghana)</label>
+            <label for="hometownGhana">7. Hometown (Ghana)</label>
             <input type="text" id="hometownGhana" placeholder="e.g. Kumasi, Ashanti Region">
         </div>
 
         <div class="form-group">
-            <label for="residenceGermany">Place of Residence (Germany)</label>
-            <input type="text" id="residenceGermany" placeholder="e.g. Düsseldorf">
+            <label for="residenceGermany">8. Place of Residence</label>
+            <input type="text" id="residenceGermany" name="residence_germany" placeholder="e.g. Düsseldorf, London, Accra">
         </div>
-
-<div class="form-group">
-    <label for="residenceGermany">Place of Residence</label>
-    <input type="text" id="residenceGermany" name="residence_germany" placeholder="e.g. Düsseldorf, London, Accra">
-</div>
 
         <div class="form-group">
             <label>Preferred Contact Method</label>
@@ -372,7 +372,6 @@
         reader.onload = function(event) {
             const img = new Image();
             img.onload = function() {
-                // Resize image to max 200x200 canvas
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 const maxSize = 200;
@@ -395,11 +394,9 @@
                 canvas.height = height;
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Convert canvas to compressed Base64 JPEG String
                 const base64String = canvas.toDataURL('image/jpeg', 0.8);
                 document.getElementById('profilePhotoBase64').value = base64String;
 
-                // Display preview
                 const photoPreview = document.getElementById('photoPreview');
                 photoPreview.src = base64String;
                 photoPreview.style.display = 'block';
@@ -431,18 +428,15 @@
         const blockMemberP1 = document.getElementById('blockMemberP1');
         const stepIndicator = document.getElementById('stepIndicator');
 
-        // Hide all conditional blocks on Page 1
         blockMenteeP1.classList.add('hidden');
         blockMemberP1.classList.add('hidden');
 
-        // Reset required state on consents
         document.getElementById('gdprConsentP1').required = false;
         document.getElementById('termsConsentP1').required = false;
         document.getElementById('gdprConsentP2').required = false;
         document.getElementById('termsConsentP2').required = false;
 
         if (category === 'Mentor') {
-            // Mentor proceeds to Page 2
             nextPageBtn.classList.remove('hidden');
             submitDirectBtn.classList.add('hidden');
             consentBlockP1.classList.add('hidden');
@@ -450,7 +444,6 @@
             document.getElementById('gdprConsentP2').required = true;
             document.getElementById('termsConsentP2').required = true;
         } else if (category === 'Mentee' || category === 'Member') {
-            // Member & Mentee submit directly on Page 1
             nextPageBtn.classList.add('hidden');
             submitDirectBtn.classList.remove('hidden');
             consentBlockP1.classList.remove('hidden');
@@ -512,6 +505,11 @@
         return selected ? selected.value : null;
     }
 
+    function getInputValue(id) {
+        const el = document.getElementById(id);
+        return el ? el.value.trim() : null;
+    }
+
     // Submit Handler
     document.getElementById('membershipForm').addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -523,7 +521,7 @@
 
         let languages = getCheckedValues('languages');
         if (document.getElementById('langOtherCheck').checked) {
-            const otherVal = document.getElementById('langOtherText').value.trim();
+            const otherVal = getInputValue('langOtherText');
             if (otherVal) languages.push(`Other: ${otherVal}`);
         }
 
@@ -531,40 +529,39 @@
         const isMentor = category === 'Mentor';
 
         const payload = {
-            profile_photo: document.getElementById('profilePhotoBase64').value || null,
-            full_name: document.getElementById('fullName').value.trim(),
-            email: document.getElementById('email').value.trim(),
-            dob_month_year: document.getElementById('dobMonthYear').value || null,
-            gender: document.getElementById('gender').value || null,
-            nationality: document.getElementById('nationality').value.trim() || null,
-            hometown_ghana: document.getElementById('hometownGhana').value.trim() || null,
-            residence_germany: document.getElementById('residenceGermany').value.trim() || null,
-            phone: document.getElementById('phone').value.trim(),
-            preferred_contact_method: getRadioValue('preferredContact'),
-            residence_germany: document.getElementById('residenceGermany') ? document.getElementById('residenceGermany').value.trim() : null,
+            profile_photo: getInputValue('profilePhotoBase64'),
+            full_name: getInputValue('fullName'),
+            email: getInputValue('email'),
+            phone: getInputValue('phone'),
+            dob_month_year: getInputValue('dobMonthYear'),
+            gender: getInputValue('gender'),
+            nationality: getInputValue('nationality'),
+            hometown_ghana: getInputValue('hometownGhana'),
+            residence_germany: getInputValue('residenceGermany'),
             city_region_germany: null,
+            preferred_contact_method: getRadioValue('preferredContact'),
             languages_spoken: languages,
-            hear_about_club: document.getElementById('hearAboutClub') ? document.getElementById('hearAboutClub').value : null,
-            profession: document.getElementById('profession') ? document.getElementById('profession').value.trim() : null,
-            comments: document.getElementById('comments') ? document.getElementById('comments').value.trim() : null,
+            hear_about_club: getInputValue('hearAboutClub'),
+            profession: getInputValue('profession'),
+            comments: getInputValue('comments'),
             membership_category: category,
 
             // Mentee attributes
             mentee_seeking: category === 'Mentee' ? getCheckedValues('menteeSeeking') : [],
-            mentee_goals: category === 'Mentee' ? (document.getElementById('menteeGoals').value.trim() || null) : null,
-            mentor_preferred_background: category === 'Mentee' ? (document.getElementById('mentorPreferredBackground').value.trim() || null) : null,
+            mentee_goals: category === 'Mentee' ? getInputValue('menteeGoals') : null,
+            mentor_preferred_background: category === 'Mentee' ? getInputValue('mentorPreferredBackground') : null,
 
             // Member attributes
             workshop_topics: category === 'Member' ? getCheckedValues('workshopTopicsMember') : [],
             help_organize_events: category === 'Member' ? getRadioValue('helpOrganizeMember') : null,
 
             // Mentor Page 2 attributes
-            job_title: isMentor ? (document.getElementById('jobTitle').value.trim() || null) : null,
-            industry_sector: isMentor ? (document.getElementById('industrySector').value || null) : null,
+            job_title: isMentor ? getInputValue('jobTitle') : null,
+            industry_sector: isMentor ? getInputValue('industrySector') : null,
             years_experience: isMentor ? getRadioValue('yearsExperience') : null,
-            qualification_field: isMentor ? (document.getElementById('qualificationField').value.trim() || null) : null,
+            qualification_field: isMentor ? getInputValue('qualificationField') : null,
             key_skills: isMentor ? getCheckedValues('skills') : [],
-            linkedin_profile: isMentor ? (document.getElementById('linkedinProfile').value.trim() || null) : null,
+            linkedin_profile: isMentor ? getInputValue('linkedinProfile') : null,
             mentor_areas: isMentor ? getCheckedValues('mentorAreas') : [],
             mentoring_format: isMentor ? getRadioValue('mentoringFormat') : null,
             max_mentees: isMentor ? getRadioValue('maxMentees') : null,
