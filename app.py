@@ -15,7 +15,7 @@ app = Flask(__name__)
 CORS(app)
 
 # ==========================================
-# 1. Database Configuration
+# 1. Database Configuration (3-Tier Fallback)
 # ==========================================
 db_url = os.getenv("DATABASE_URL")
 db_pass = os.getenv("DB_PASS")

@@ -3,14 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-
 class CouncilMember(db.Model):
     """
     SQLAlchemy Model for Ghana Council NRW Professionals Club Members.
     Stores Profile Photo, Personal Info, Mentee Block, Member Block (Page 1),
     and Mentor Professional & Matching Details (Page 2).
     """
-
     __tablename__ = "club_members"
 
     # Primary Keys & Identifiers
@@ -32,14 +30,15 @@ class CouncilMember(db.Model):
     preferred_contact_method = db.Column(db.String(50), nullable=True)
     city_region_germany = db.Column(db.String(150), nullable=True)
     languages_spoken = db.Column(db.JSON, nullable=True)
-
+    
     # Page 1: General Info for Everyone
     hear_about_club = db.Column(db.String(150), nullable=True)
     profession = db.Column(db.String(255), nullable=True)
     comments = db.Column(db.Text, nullable=True)
-    membership_category = db.Column(
-        db.String(50), nullable=False
-    )  # Member / Mentee / Mentor
+    membership_category = db.Column(db.String(50), nullable=False)  # Member / Mentee / Mentor
+
+    # Application Status
+    status = db.Column(db.String(50), nullable=False, default="Pending")  # Pending / Accepted / Rejected
 
     # Page 1: Mentee Block
     mentee_seeking = db.Column(db.JSON, nullable=True)
@@ -71,6 +70,10 @@ class CouncilMember(db.Model):
     # System Timestamps
     submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Relational links for Mentorship
+    mentor_assignments = db.relationship('MentorshipAssignment', foreign_keys='MentorshipAssignment.mentor_id', backref='mentor', lazy=True)
+    mentee_assignments = db.relationship('MentorshipAssignment', foreign_keys='MentorshipAssignment.mentee_id', backref='mentee', lazy=True)
+
     def generate_formatted_id(self):
         """Generates readable membership ID e.g., GC-PC-001."""
         if self.id:
@@ -87,7 +90,22 @@ class CouncilMember(db.Model):
             "membership_category": self.membership_category,
             "profession": self.profession or self.job_title,
             "city_region_germany": self.city_region_germany,
-            "submitted_at": (
-                self.submitted_at.isoformat() if self.submitted_at else None
-            ),
+            "submitted_at": self.submitted_at.isoformat() if self.submitted_at else None,
         }
+
+
+class MentorshipAssignment(db.Model):
+    """
+    Stores mentorship pairings between a Mentor and a Mentee with duration details.
+    """
+    __tablename__ = "mentorship_assignments"
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    mentor_id = db.Column(db.Integer, db.ForeignKey('club_members.id', ondelete='CASCADE'), nullable=False)
+    mentee_id = db.Column(db.Integer, db.ForeignKey('club_members.id', ondelete='CASCADE'), nullable=False)
+    focus_area = db.Column(db.String(255), nullable=True)
+    status = db.Column(db.String(50), default="Active")  # Active / Completed / Terminated
+    start_date = db.Column(db.Date, default=datetime.utcnow)
+    end_date = db.Column(db.Date, nullable=True)
+    notes = db.Column(db.Text, nullable=True)
+    assigned_at = db.Column(db.DateTime, default=datetime.utcnow)
