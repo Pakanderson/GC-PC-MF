@@ -1,33 +1,30 @@
 import os
 import io
 import csv
+from functools import wraps
 from datetime import datetime
-from flask import Flask, request, jsonify, render_template, make_response
+from flask import Flask, request, jsonify, render_template, make_response, Response
 from flask_cors import CORS
 from flask_mail import Mail, Message
 from pydantic import ValidationError
 
-from models import db, CouncilMember
+from models import db, CouncilMember, MentorshipAssignment
 from schemas import MemberRegistrationSchema
 
-# Initialize Flask App
 app = Flask(__name__)
-CORS(app)  # Enable Cross-Origin Resource Sharing
+CORS(app)
 
 # ==========================================
-# 1. Database Configuration (3-Tier Fallback)
+# 1. Database Configuration
 # ==========================================
 db_url = os.getenv("DATABASE_URL")
 db_pass = os.getenv("DB_PASS")
 
 if db_url:
-    # --- Priority 1: Render / Cloud PostgreSQL ---
     if db_url.startswith("postgres://"):
         db_url = db_url.replace("postgres://", "postgresql://", 1)
     app.config["SQLALCHEMY_DATABASE_URI"] = db_url
-
 elif db_pass:
-    # --- Priority 2: Local MySQL ---
     db_user = os.getenv("DB_USER", "root")
     db_host = os.getenv("DB_HOST", "127.0.0.1")
     db_port = os.getenv("DB_PORT", "3306")
@@ -35,9 +32,7 @@ elif db_pass:
     app.config["SQLALCHEMY_DATABASE_URI"] = (
         f"mysql+pymysql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
     )
-
 else:
-    # --- Priority 3: Local SQLite Fallback ---
     os.makedirs(os.path.join(app.root_path, "instance"), exist_ok=True)
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///instance/club.db"
 
@@ -56,82 +51,77 @@ app.config["MAIL_DEFAULT_SENDER"] = (
     os.getenv("MAIL_USERNAME", "info@ghanacouncil-nrw.de"),
 )
 
-# Initialize Extensions
 db.init_app(app)
 mail = Mail(app)
 
-# Initialize Tables Contextually
 with app.app_context():
     db.create_all()
 
+# ==========================================
+# 3. Admin Security (Supports Up to 5 Accounts)
+# ==========================================
+ADMIN_ACCOUNTS = {
+    os.getenv("ADMIN_USER", "admin"): os.getenv("ADMIN_PASS", "GhanaCouncil2026!")
+}
+
+# Load individual admin accounts (ADMIN1_USER/PASS through ADMIN5_USER/PASS)
+for i in range(1, 6):
+    u = os.getenv(f"ADMIN{i}_USER")
+    p = os.getenv(f"ADMIN{i}_PASS")
+    if u and p:
+        ADMIN_ACCOUNTS[u] = p
+
+
+def requires_admin_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth = request.authorization
+        if (
+            not auth
+            or auth.username not in ADMIN_ACCOUNTS
+            or ADMIN_ACCOUNTS[auth.username] != auth.password
+        ):
+            return Response(
+                "Admin Authentication Required",
+                401,
+                {"WWW-Authenticate": 'Basic realm="Login Required"'},
+            )
+        return f(*args, **kwargs)
+
+    return decorated
+
 
 # ==========================================
-# 3. Helper Functions & Email Dispatch
+# 4. Helper Functions
 # ==========================================
 def send_confirmation_email(recipient_email, full_name, category):
-    """Sends registration confirmation email to the applicant."""
     try:
         msg = Message(
             subject="Ghana Council NRW Professionals Club — Registration Confirmation",
             recipients=[recipient_email],
         )
-        msg.body = f"""Dear {full_name},
-
-Thank you for registering with the Ghana Council NRW Professionals Club!
-
-We have successfully received your membership application as a: {category}.
-Our administrative team is reviewing your profile and will follow up with event invites, networking updates, or mentorship matching shortly.
-
-Kind regards,
-Ghana Council NRW e.V. Initiative
-Düsseldorf, Germany
-info@ghanacouncil-nrw.de
-www.ghanacouncil-nrw.de
-"""
-        msg.html = f"""
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">
-            <h2 style="color: #006B3F; text-align: center;">Ghana Council NRW e.V.</h2>
-            <p style="text-align: center; color: #666; font-size: 14px;">Professionals Club — Membership Registration</p>
-            <hr style="border: 0; border-top: 1px solid #ccc;">
-            <p>Welcome, <strong>{full_name}</strong>!</p>
-            <p>Thank you for submitting your membership application to the Ghana Council NRW Professionals Club.</p>
-            <div style="background-color: #f9f9f9; padding: 15px; border-left: 4px solid #006B3F; margin: 20px 0;">
-                <p style="margin: 0; font-weight: bold;">Membership Category: <span style="color: #006B3F;">{category}</span></p>
-                <p style="margin: 5px 0 0 0; color: #555;">Status: Application Received & Under Review</p>
-            </div>
-            <p>If you have any questions or need to update your details, please feel free to contact us at <a href="mailto:info@ghanacouncil-nrw.de">info@ghanacouncil-nrw.de</a>.</p>
-            <br>
-            <p style="margin: 0;">Warm regards,</p>
-            <p style="margin: 0; font-weight: bold;">Ghana Council NRW e.V. Team</p>
-            <p style="color: #888; font-size: 12px; margin-top: 5px;">Düsseldorf, Germany</p>
-        </div>
-        """
+        msg.body = f"Dear {full_name},\n\nThank you for registering with the Ghana Council NRW Professionals Club as a {category}.\n\nKind regards,\nGhana Council NRW e.V."
         mail.send(msg)
         return True
     except Exception as e:
-        print(f"[Email Error] Failed to send email to {recipient_email}: {str(e)}")
+        print(f"[Email Error] {str(e)}")
         return False
 
 
 # ==========================================
-# 4. Web & API Routes
+# 5. Public Routes
 # ==========================================
-
-
 @app.route("/")
 def home():
-    """Renders the main membership registration form."""
     return render_template("index.html")
 
 
 @app.route("/api/register", methods=["POST"])
 def register_member():
-    """Handles submission of Page 1 (Member/Mentee) or Page 1 + Page 2 (Mentor) data."""
     data = request.get_json()
     if not data:
         return jsonify({"status": "error", "message": "No JSON payload provided"}), 400
 
-    # Validate incoming payload against Pydantic schema
     try:
         validated_data = MemberRegistrationSchema(**data)
     except ValidationError as e:
@@ -146,7 +136,6 @@ def register_member():
             422,
         )
 
-    # Convert YYYY-MM dob string to standard SQL Date format (YYYY-MM-01)
     dob_date = None
     if validated_data.dob_month_year:
         try:
@@ -154,21 +143,10 @@ def register_member():
                 f"{validated_data.dob_month_year}-01", "%Y-%m-%d"
             ).date()
         except ValueError:
-            return (
-                jsonify(
-                    {
-                        "status": "error",
-                        "message": "Invalid date format for Date of Birth. Use YYYY-MM.",
-                    }
-                ),
-                400,
-            )
+            return jsonify({"status": "error", "message": "Invalid DOB format"}), 400
 
-    # Map payload to database model
     new_member = CouncilMember(
-        # Profile Photo
         profile_photo=validated_data.profile_photo,
-        # Page 1: Personal & Contact Info
         full_name=validated_data.full_name,
         email=validated_data.email,
         date_of_birth=dob_date,
@@ -184,14 +162,11 @@ def register_member():
         profession=validated_data.profession,
         comments=validated_data.comments,
         membership_category=validated_data.membership_category,
-        # Mentee Block (Page 1)
         mentee_seeking=validated_data.mentee_seeking,
         mentee_goals=validated_data.mentee_goals,
         mentor_preferred_background=validated_data.mentor_preferred_background,
-        # Member Block (Page 1)
         workshop_topics=validated_data.workshop_topics,
         help_organize_events=validated_data.help_organize_events,
-        # Mentor Professional & Matching Fields (Page 2)
         job_title=validated_data.job_title,
         industry_sector=validated_data.industry_sector,
         years_experience=validated_data.years_experience,
@@ -203,7 +178,6 @@ def register_member():
         max_mentees=validated_data.max_mentees,
         mentor_availability=validated_data.mentor_availability,
         workshop_speaker=validated_data.workshop_speaker,
-        # Engagement & Consent
         event_availability=validated_data.event_availability,
         gdpr_consent=validated_data.gdpr_consent,
         terms_consent=validated_data.terms_consent,
@@ -211,31 +185,22 @@ def register_member():
 
     try:
         db.session.add(new_member)
-        db.session.flush()  # Acquire auto-increment ID
-
-        # Generate custom readable ID (e.g., GC-PC-001)
+        db.session.flush()
         new_member.generate_formatted_id()
         db.session.commit()
-
-        # Send confirmation email
-        email_sent = send_confirmation_email(
-            recipient_email=new_member.email,
-            full_name=new_member.full_name,
-            category=new_member.membership_category,
+        send_confirmation_email(
+            new_member.email, new_member.full_name, new_member.membership_category
         )
-
         return (
             jsonify(
                 {
                     "status": "success",
                     "message": "Registration submitted successfully!",
                     "member_id": new_member.member_id,
-                    "email_sent": email_sent,
                 }
             ),
             201,
         )
-
     except Exception as err:
         db.session.rollback()
         return (
@@ -250,25 +215,118 @@ def register_member():
         )
 
 
-@app.route("/admin/members", methods=["GET"])
-def view_members():
-    """Renders administrative member dashboard."""
-    category = request.args.get("category")
-    query = CouncilMember.query
+# ==========================================
+# 6. Protected Admin Routes
+# ==========================================
 
+
+@app.route("/admin/members", methods=["GET"])
+@requires_admin_auth
+def view_members():
+    category = request.args.get("category")
+    status_filter = request.args.get("status")
+
+    query = CouncilMember.query
     if category:
         query = query.filter_by(membership_category=category)
+    if status_filter:
+        query = query.filter_by(status=status_filter)
 
     members = query.order_by(CouncilMember.id.desc()).all()
-    return render_template("admin.html", members=members, selected_category=category)
+    mentors = CouncilMember.query.filter_by(
+        membership_category="Mentor", status="Accepted"
+    ).all()
+    mentees = CouncilMember.query.filter_by(
+        membership_category="Mentee", status="Accepted"
+    ).all()
+    assignments = MentorshipAssignment.query.order_by(
+        MentorshipAssignment.id.desc()
+    ).all()
+
+    return render_template(
+        "admin.html",
+        members=members,
+        selected_category=category,
+        selected_status=status_filter,
+        mentors=mentors,
+        mentees=mentees,
+        assignments=assignments,
+    )
+
+
+@app.route("/admin/members/<int:member_id>/status", methods=["POST"])
+@requires_admin_auth
+def update_member_status(member_id):
+    data = request.get_json()
+    new_status = data.get("status")
+
+    if new_status not in ["Accepted", "Rejected", "Pending"]:
+        return jsonify({"status": "error", "message": "Invalid status value"}), 400
+
+    member = CouncilMember.query.get_or_404(member_id)
+    member.status = new_status
+    db.session.commit()
+    return jsonify(
+        {"status": "success", "message": f"Member status updated to {new_status}"}
+    )
+
+
+@app.route("/admin/members/<int:member_id>/delete", methods=["DELETE"])
+@requires_admin_auth
+def delete_member(member_id):
+    member = CouncilMember.query.get_or_404(member_id)
+    db.session.delete(member)
+    db.session.commit()
+    return jsonify(
+        {"status": "success", "message": "Member record deleted successfully"}
+    )
+
+
+@app.route("/admin/assign-mentorship", methods=["POST"])
+@requires_admin_auth
+def assign_mentorship():
+    data = request.get_json()
+    mentor_id = data.get("mentor_id")
+    mentee_id = data.get("mentee_id")
+    focus_area = data.get("focus_area")
+    end_date_str = data.get("end_date")
+
+    if not mentor_id or not mentee_id:
+        return (
+            jsonify({"status": "error", "message": "Mentor and Mentee are required"}),
+            400,
+        )
+
+    end_date = None
+    if end_date_str:
+        try:
+            end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
+        except ValueError:
+            return (
+                jsonify({"status": "error", "message": "Invalid end date format"}),
+                400,
+            )
+
+    assignment = MentorshipAssignment(
+        mentor_id=mentor_id,
+        mentee_id=mentee_id,
+        focus_area=focus_area,
+        end_date=end_date,
+        notes=data.get("notes"),
+    )
+
+    db.session.add(assignment)
+    db.session.commit()
+    return jsonify(
+        {"status": "success", "message": "Mentorship assignment created successfully!"}
+    )
 
 
 @app.route("/admin/members/export", methods=["GET"])
+@requires_admin_auth
 def export_members_csv():
-    """Exports all members or filtered member list as CSV."""
     category = request.args.get("category")
     query = CouncilMember.query
-
     if category:
         query = query.filter_by(membership_category=category)
 
@@ -283,7 +341,7 @@ def export_members_csv():
             "Email",
             "Phone",
             "Category",
-            "Profession / Job Title",
+            "Status",
             "City",
             "Submitted At",
         ]
@@ -297,7 +355,7 @@ def export_members_csv():
                 m.email,
                 m.phone,
                 m.membership_category,
-                m.job_title or m.profession or "",
+                m.status,
                 m.city_region_germany,
                 m.submitted_at.strftime("%Y-%m-%d %H:%M:%S") if m.submitted_at else "",
             ]
@@ -309,8 +367,5 @@ def export_members_csv():
     return output
 
 
-# ==========================================
-# 5. Application Entry Point
-# ==========================================
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
