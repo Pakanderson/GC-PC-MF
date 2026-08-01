@@ -4,6 +4,16 @@ import csv
 from functools import wraps
 from datetime import datetime
 from flask import Flask, request, jsonify, render_template, make_response, Response
+from flask import (
+    Flask,
+    render_template,
+    request,
+    jsonify,
+    redirect,
+    url_for,
+    make_response,
+    flash,
+)
 from flask_cors import CORS
 from flask_mail import Mail, Message
 from pydantic import ValidationError
@@ -286,7 +296,7 @@ def view_members():
 
 
 # ==========================================
-# 6. Protected Admin Routes (HTML Form Actions)
+# 6. Protected Admin Routes (HTML Actions)
 # ==========================================
 
 
@@ -294,9 +304,10 @@ def view_members():
 @requires_admin_auth
 def accept_member_html(member_id):
     try:
-        member = CouncilMember.query.get_or_404(member_id)
-        member.status = "Accepted"
-        db.session.commit()
+        member = CouncilMember.query.get(member_id)
+        if member:
+            member.status = "Accepted"
+            db.session.commit()
     except Exception as e:
         db.session.rollback()
         print(f"Error accepting member {member_id}: {e}")
@@ -307,9 +318,10 @@ def accept_member_html(member_id):
 @requires_admin_auth
 def reject_member_html(member_id):
     try:
-        member = CouncilMember.query.get_or_404(member_id)
-        member.status = "Rejected"
-        db.session.commit()
+        member = CouncilMember.query.get(member_id)
+        if member:
+            member.status = "Rejected"
+            db.session.commit()
     except Exception as e:
         db.session.rollback()
         print(f"Error rejecting member {member_id}: {e}")
@@ -320,9 +332,10 @@ def reject_member_html(member_id):
 @requires_admin_auth
 def delete_member_html(member_id):
     try:
-        member = CouncilMember.query.get_or_404(member_id)
-        db.session.delete(member)
-        db.session.commit()
+        member = CouncilMember.query.get(member_id)
+        if member:
+            db.session.delete(member)
+            db.session.commit()
     except Exception as e:
         db.session.rollback()
         print(f"Error deleting member {member_id}: {e}")
