@@ -111,6 +111,11 @@
                   <td>{{ member.residence_germany or '-' }}</td>
                   <td class="text-center">
                     <div class="d-inline-flex gap-1">
+                      
+                      <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editMemberModal{{ member.id }}" title="Edit Member">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+
                       <form action="/admin/members/{{ member.id }}/accept" method="POST">
                         <button type="submit" class="btn btn-sm btn-outline-success" title="Admit Member">
                           <i class="bi bi-check-lg"></i> Admit
@@ -131,6 +136,47 @@
                     </div>
                   </td>
                 </tr>
+
+                <div class="modal fade text-start" id="editMemberModal{{ member.id }}" tabindex="-1" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <form action="/admin/members/{{ member.id }}/edit" method="POST">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Edit Member: {{ member.full_name }}</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="mb-3">
+                            <label class="form-label fw-bold">Full Name</label>
+                            <input type="text" class="form-control" name="full_name" value="{{ member.full_name }}" required>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label fw-bold">Email</label>
+                            <input type="email" class="form-control" name="email" value="{{ member.email }}" required>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label fw-bold">Phone</label>
+                            <input type="text" class="form-control" name="phone" value="{{ member.phone }}" required>
+                          </div>
+                          <div class="mb-3">
+                            <label class="form-label fw-bold">Membership Category</label>
+                            <select name="membership_category" class="form-select">
+                              <option value="General Member" {% if member.membership_category == 'General Member' %}selected{% endif %}>General Member</option>
+                              <option value="Mentor" {% if member.membership_category == 'Mentor' %}selected{% endif %}>Mentor</option>
+                              <option value="Mentee" {% if member.membership_category == 'Mentee' %}selected{% endif %}>Mentee</option>
+                              <option value="Executive / Leadership" {% if member.membership_category == 'Executive / Leadership' %}selected{% endif %}>Executive / Leadership</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                          <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
                 {% endfor %}
               {% else %}
                 <tr>
@@ -203,6 +249,7 @@
                     <th>Mentee</th>
                     <th>Focus Area</th>
                     <th>End Date</th>
+                    <th class="text-center">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -213,11 +260,48 @@
                       <td>{{ assign.mentee.full_name if assign.mentee else 'N/A' }}</td>
                       <td>{{ assign.focus_area or '-' }}</td>
                       <td>{{ assign.end_date or 'Ongoing' }}</td>
+                      <td class="text-center">
+                        <div class="d-inline-flex gap-1">
+                          <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editMentorshipModal{{ assign.id }}" title="Edit Date">
+                            <i class="bi bi-pencil"></i>
+                          </button>
+                          
+                          <form action="/admin/mentorship/{{ assign.id }}/delete" method="POST" onsubmit="return confirm('Are you sure you want to remove this mentorship assignment?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Role">
+                              <i class="bi bi-trash"></i>
+                            </button>
+                          </form>
+                        </div>
+                      </td>
                     </tr>
+
+                    <div class="modal fade" id="editMentorshipModal{{ assign.id }}" tabindex="-1" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <form action="/admin/mentorship/{{ assign.id }}/edit" method="POST">
+                            <div class="modal-header">
+                              <h5 class="modal-title">Edit Mentorship Date</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                              <div class="mb-3">
+                                <label class="form-label fw-bold">Update Target End Date</label>
+                                <input type="date" class="form-control" name="assignment_date" value="{{ assign.end_date }}">
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                              <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+
                     {% endfor %}
                   {% else %}
                     <tr>
-                      <td colspan="4" class="text-center py-4 text-muted">No active mentorship assignments.</td>
+                      <td colspan="5" class="text-center py-4 text-muted">No active mentorship assignments.</td>
                     </tr>
                   {% endif %}
                 </tbody>

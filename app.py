@@ -460,6 +460,84 @@ def export_members_csv():
     output.headers["Content-type"] = "text/csv"
     return output
 
+# ==========================================
+# NEW ROUTES: MANAGE MEMBER PROFILES
+# ==========================================
+
+
+@app.route("/admin/members/<int:member_id>/edit", methods=["POST"])
+def edit_member(member_id):
+    if "admin_logged_in" not in session:
+        return redirect(url_for("admin_login"))
+
+    member = ClubMember.query.get_or_404(member_id)
+
+    # Update fields from the modal form
+    member.full_name = request.form.get("full_name", member.full_name)
+    member.email = request.form.get("email", member.email)
+    member.phone = request.form.get("phone", member.phone)
+    member.membership_category = request.form.get(
+        "membership_category", member.membership_category
+    )
+
+    try:
+        db.session.commit()
+        flash(f"Member {member.full_name} updated successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash("Error updating member. Email or phone might already exist.", "danger")
+
+    return redirect(url_for("admin_members"))
+
+
+# ==========================================
+# NEW ROUTES: MANAGE MENTORSHIPS
+# ==========================================
+
+
+@app.route("/admin/mentorship/<int:assignment_id>/edit", methods=["POST"])
+def edit_mentorship(assignment_id):
+    if "admin_logged_in" not in session:
+        return redirect(url_for("admin_login"))
+
+    assignment = MentorshipAssignment.query.get_or_404(assignment_id)
+
+    # Update the date or status if you have those fields
+    assignment.assignment_date = request.form.get(
+        "assignment_date", assignment.assignment_date
+    )
+    # If you have a status field (e.g., Active, Completed), you can update it here:
+    # assignment.status = request.form.get('status', assignment.status)
+
+    try:
+        db.session.commit()
+        flash("Mentorship assignment updated successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash("Error updating mentorship assignment.", "danger")
+
+    return redirect(
+        url_for("admin_members")
+    )  # Or whichever page your mentorship table is on
+
+
+@app.route("/admin/mentorship/<int:assignment_id>/delete", methods=["POST"])
+def delete_mentorship(assignment_id):
+    if "admin_logged_in" not in session:
+        return redirect(url_for("admin_login"))
+
+    assignment = MentorshipAssignment.query.get_or_404(assignment_id)
+
+    try:
+        db.session.delete(assignment)
+        db.session.commit()
+        flash("Mentorship assignment deleted successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash("Error deleting mentorship assignment.", "danger")
+
+    return redirect(url_for("admin_members"))
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
