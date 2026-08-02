@@ -4,7 +4,6 @@ import csv
 from functools import wraps
 from typing import Optional
 from datetime import datetime
-from flask import Flask, request, jsonify, render_template, make_response, Response
 from flask import (
     Flask,
     render_template,
@@ -14,6 +13,7 @@ from flask import (
     url_for,
     make_response,
     flash,
+    Response,
 )
 from flask_cors import CORS
 from flask_mail import Mail, Message
@@ -23,6 +23,7 @@ from models import db, CouncilMember, MentorshipAssignment
 from schemas import MemberRegistrationSchema
 
 app = Flask(__name__)
+app.secret_key = os.getenv("SECRET_KEY", "ghana-council-secret-key-2026")
 CORS(app)
 
 # ==========================================
@@ -196,7 +197,7 @@ def register_member():
         residence_germany=validated_data.residence_germany,
         phone=validated_data.phone,
         preferred_contact_method=validated_data.preferred_contact_method,
-        city_region_germany=getattr(validated_data, 'city_region_germany', None),
+        city_region_germany=getattr(validated_data, "city_region_germany", None),
         languages_spoken=validated_data.languages_spoken,
         hear_about_club=validated_data.hear_about_club,
         profession=validated_data.profession,
@@ -298,11 +299,6 @@ def view_members():
 # --- HTML Form Actions for Admin Dashboard ---
 
 
-# ==========================================
-# 6. Protected Admin Routes (HTML Actions)
-# ==========================================
-
-
 @app.route("/admin/members/<int:member_id>/accept", methods=["POST"])
 @requires_admin_auth
 def accept_member_html(member_id):
@@ -345,35 +341,30 @@ def delete_member_html(member_id):
     return redirect(url_for("view_members"))
 
 
-# --- API Routes for JSON updates ---
-
-
-@app.route("/admin/members/<int:member_id>/status", methods=["POST"])
+@app.route("/admin/members/<int:member_id>/edit", methods=["POST"])
 @requires_admin_auth
-def update_member_status(member_id):
-    data = request.get_json()
-    new_status = data.get("status")
-
-    if new_status not in ["Accepted", "Rejected", "Pending"]:
-        return jsonify({"status": "error", "message": "Invalid status value"}), 400
-
+def edit_member(member_id):
     member = CouncilMember.query.get_or_404(member_id)
-    member.status = new_status
-    db.session.commit()
-    return jsonify(
-        {"status": "success", "message": f"Member status updated to {new_status}"}
+
+    # Update fields from the modal form
+    member.full_name = request.form.get("full_name", member.full_name)
+    member.email = request.form.get("email", member.email)
+    member.phone = request.form.get("phone", member.phone)
+    member.membership_category = request.form.get(
+        "membership_category", member.membership_category
     )
 
+    try:
+        db.session.commit()
+        flash(f"Member {member.full_name} updated successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash("Error updating member. Email or phone might already exist.", "danger")
 
-@app.route("/admin/members/<int:member_id>/delete", methods=["DELETE"])
-@requires_admin_auth
-def delete_member(member_id):
-    member = CouncilMember.query.get_or_404(member_id)
-    db.session.delete(member)
-    db.session.commit()
-    return jsonify(
-        {"status": "success", "message": "Member record deleted successfully"}
-    )
+    return redirect(url_for("view_members"))
+
+
+# --- Mentorship Management Routes ---
 
 
 @app.route("/admin/assign-mentorship", methods=["POST"])
@@ -414,6 +405,51 @@ def assign_mentorship():
     return jsonify(
         {"status": "success", "message": "Mentorship assignment created successfully!"}
     )
+
+
+@app.route("/admin/mentorship/<int:assignment_id>/edit", methods=["POST"])
+@requires_admin_auth
+def edit_mentorship(assignment_id):
+    assignment = MentorshipAssignment.query.get_or_404(assignment_id)
+
+    if request.form.get("end_date"):
+        try:
+            assignment.end_date = datetime.strptime(
+                request.form.get("end_date"), "%Y-%m-%d"
+            ).date()
+        except ValueError:
+            pass
+
+    assignment.focus_area = request.form.get("focus_area", assignment.focus_area)
+    assignment.notes = request.form.get("notes", assignment.notes)
+
+    try:
+        db.session.commit()
+        flash("Mentorship assignment updated successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash("Error updating mentorship assignment.", "danger")
+
+    return redirect(url_for("view_members"))
+
+
+@app.route("/admin/mentorship/<int:assignment_id>/delete", methods=["POST"])
+@requires_admin_auth
+def delete_mentorship(assignment_id):
+    assignment = MentorshipAssignment.query.get_or_404(assignment_id)
+
+    try:
+        db.session.delete(assignment)
+        db.session.commit()
+        flash("Mentorship assignment deleted successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash("Error deleting mentorship assignment.", "danger")
+
+    return redirect(url_for("view_members"))
+
+
+# --- CSV Export Route ---
 
 
 @app.route("/admin/members/export", methods=["GET"])
@@ -459,84 +495,6 @@ def export_members_csv():
     output.headers["Content-Disposition"] = "attachment; filename=club_members.csv"
     output.headers["Content-type"] = "text/csv"
     return output
-
-# ==========================================
-# NEW ROUTES: MANAGE MEMBER PROFILES
-# ==========================================
-
-
-@app.route("/admin/members/<int:member_id>/edit", methods=["POST"])
-def edit_member(member_id):
-    if "admin_logged_in" not in session:
-        return redirect(url_for("admin_login"))
-
-    member = ClubMember.query.get_or_404(member_id)
-
-    # Update fields from the modal form
-    member.full_name = request.form.get("full_name", member.full_name)
-    member.email = request.form.get("email", member.email)
-    member.phone = request.form.get("phone", member.phone)
-    member.membership_category = request.form.get(
-        "membership_category", member.membership_category
-    )
-
-    try:
-        db.session.commit()
-        flash(f"Member {member.full_name} updated successfully!", "success")
-    except Exception as e:
-        db.session.rollback()
-        flash("Error updating member. Email or phone might already exist.", "danger")
-
-    return redirect(url_for("admin_members"))
-
-
-# ==========================================
-# NEW ROUTES: MANAGE MENTORSHIPS
-# ==========================================
-
-
-@app.route("/admin/mentorship/<int:assignment_id>/edit", methods=["POST"])
-def edit_mentorship(assignment_id):
-    if "admin_logged_in" not in session:
-        return redirect(url_for("admin_login"))
-
-    assignment = MentorshipAssignment.query.get_or_404(assignment_id)
-
-    # Update the date or status if you have those fields
-    assignment.assignment_date = request.form.get(
-        "assignment_date", assignment.assignment_date
-    )
-    # If you have a status field (e.g., Active, Completed), you can update it here:
-    # assignment.status = request.form.get('status', assignment.status)
-
-    try:
-        db.session.commit()
-        flash("Mentorship assignment updated successfully!", "success")
-    except Exception as e:
-        db.session.rollback()
-        flash("Error updating mentorship assignment.", "danger")
-
-    return redirect(
-        url_for("admin_members")
-    )  # Or whichever page your mentorship table is on
-
-
-@app.route("/admin/mentorship/<int:assignment_id>/delete", methods=["POST"])
-def delete_mentorship(assignment_id):
-    if "admin_logged_in" not in session:
-        return redirect(url_for("admin_login"))
-
-    assignment = MentorshipAssignment.query.get_or_404(assignment_id)
-
-    try:
-        db.session.delete(assignment)
-        db.session.commit()
-        flash("Mentorship assignment deleted successfully!", "success")
-    except Exception as e:
-        db.session.rollback()
-        flash("Error deleting mentorship assignment.", "danger")
-
-    return redirect(url_for("admin_members"))
 
 
 if __name__ == "__main__":
